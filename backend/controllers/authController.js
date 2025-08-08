@@ -1,3 +1,4 @@
+//Exclusivo para login y registro
 import User from '../models/User.js'
 import jwt from 'jsonwebtoken'
 

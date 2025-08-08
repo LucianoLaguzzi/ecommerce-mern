@@ -1,5 +1,6 @@
 import express from 'express'
 import dotenv from 'dotenv'
+import cors from 'cors'
 import conectarDB from './config/db.js'
 import authRoutes from './routes/authRoutes.js'
 import userRoutes from './routes/userRoutes.js'
@@ -16,9 +17,14 @@ conectarDB()
 app.use(express.json())
 
 
+// Middleware CORS para permitir conexión desde frontend
+app.use(cors({
+  origin: 'http://localhost:5173' // dirección del frontend
+}))
+
 // Rutas
-app.use('/api/auth', authRoutes)
-app.use('/api/users', userRoutes)
+app.use('/api/auth', authRoutes)  //registrar nuevo, loguear usuario (con el token para la sesion) 
+app.use('/api/users', userRoutes) //mostrar usaurios
 app.use('/api/products', productRoutes)
 
 
