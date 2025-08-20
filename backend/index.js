@@ -5,6 +5,7 @@ import conectarDB from './config/db.js'
 import authRoutes from './routes/authRoutes.js'
 import userRoutes from './routes/userRoutes.js'
 import productRoutes from './routes/productRoutes.js'
+import orderRoutes from './routes/orderRoutes.js';
 
 dotenv.config()
 
@@ -27,6 +28,7 @@ app.use('/api/auth', authRoutes)  //registrar nuevo, loguear usuario (con el tok
 app.use('/api/users', userRoutes) //mostrar usaurios
 app.use('/api/products', productRoutes)
 
+app.use('/api/orders', orderRoutes);
 
 
 

@@ -1,81 +1,93 @@
-// src/context/CartProvider.jsx
-//En el main.jsx se agrega <CartProvider> toda la app puede usar el carrito, porque está "envuelta" por el proveedor del contexto
-//Aca se implementa la logica del carrito
-
 import { useState, useEffect } from "react";
 import CartContext from "./CartContext";
-
+import { useAuth } from "./AuthContext";
+import toast from 'react-hot-toast';
 
 const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState(() => {
-    const storedCart = localStorage.getItem("cartItems");
-    return storedCart ? JSON.parse(storedCart) : [];
-  });
+  const { user } = useAuth();
+  const [cartItems, setCartItems] = useState([]);
 
+  // Cargar carrito al cambiar de usuario
   useEffect(() => {
-    localStorage.setItem("cartItems", JSON.stringify(cartItems));
-  }, [cartItems]);
+    if (user) {
+      const saved = localStorage.getItem(`cartItems_${user._id}`);
+      setCartItems(saved ? JSON.parse(saved) : []);
+    } else {
+      const guest = localStorage.getItem("cartItems_guest");
+      setCartItems(guest ? JSON.parse(guest) : []);
+    }
+  }, [user]);
 
-    //Agregar al carro
-    const addToCart = (product) => {
-      setCartItems((prevItems) => {
-        const existingProduct = prevItems.find(item => item._id === product._id);
+  // Guardar carrito en localStorage siempre que cambie
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem(`cartItems_${user._id}`, JSON.stringify(cartItems));
+    } else {
+      localStorage.setItem("cartItems_guest", JSON.stringify(cartItems));
+    }
+  }, [cartItems, user]);
 
-        if (existingProduct) {
-          if (existingProduct.quantity >= product.stock) {
-            alert("No hay más stock disponible de este producto.");
-            return prevItems;
-          }
+  const addToCart = (product) => {
+    const existing = cartItems.find((i) => String(i._id) === String(product._id));
 
-          return prevItems.map(item =>
-            item._id === product._id
-              ? { ...item, quantity: item.quantity + 1 }
-              : item
-          );
-        } else {
-          return [...prevItems, { ...product, quantity: 1 }];
-        }
-      });
-    };
-
-    const removeFromCart = (productId) => {
-        setCartItems((prevItems) =>
-            prevItems.filter((item) => item._id !== productId)
-        );
-    };
-
-    const clearCart = () => {
-        setCartItems([]);
-    };
-
-  const increaseQuantity = (productId) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item._id === productId
-          ? item.quantity < item.stock
-            ? { ...item, quantity: item.quantity + 1 }
-            : item // no cambia si ya está al máximo
-          : item
-        
-      )
-    );
-    
-  };
-  
-
-    const decreaseQuantity = (productId) => {
-      setCartItems((prevItems) =>
-        prevItems.map((item) =>
-          item._id === productId
-            ? { ...item, quantity: item.quantity > 1 ? item.quantity - 1 : 1 }
-            : item
+    if (existing) {
+      setCartItems(prev =>
+        prev.map(i =>
+          String(i._id) === String(product._id)
+            ? { ...i, quantity: i.quantity + 1 }
+            : i
         )
       );
-    };
+    } else {
+      setCartItems(prev => [...prev, { ...product, quantity: 1 }]);
+    }
+
+    toast.success(`${product.name} agregado al carrito!`, {
+      duration: 3000, // 3 segundos
+        style: {
+          marginTop: "50px", // lo desplazo mas abajo desde el top right(app.jsx)
+        },
+    });
+
+    return null; // no bloquea el agregado
+  };
+
+  const removeFromCart = (productId) => {
+    setCartItems(prev => prev.filter((i) => String(i._id) !== String(productId)));
+  };
+
+  const clearCart = () => setCartItems([]);
+
+  const increaseQuantity = (productId) => {
+    setCartItems(prev =>
+      prev.map(i => {
+        if (String(i._id) !== String(productId)) return i;
+        if (i.quantity >= i.stock) return i;
+        return { ...i, quantity: i.quantity + 1 };
+      })
+    );
+  };
+
+  const decreaseQuantity = (productId) => {
+    setCartItems(prev =>
+      prev.map(i =>
+        String(i._id) === String(productId)
+          ? { ...i, quantity: Math.max(1, i.quantity - 1) }
+          : i
+      )
+    );
+  };
 
   return (
     <CartContext.Provider
-      value={{ cartItems, addToCart, removeFromCart, clearCart, increaseQuantity, decreaseQuantity }}
+      value={{
+        cartItems,
+        addToCart,
+        removeFromCart,
+        clearCart,
+        increaseQuantity,
+        decreaseQuantity,
+      }}
     >
       {children}
     </CartContext.Provider>
