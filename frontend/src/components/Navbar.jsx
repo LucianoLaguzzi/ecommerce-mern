@@ -43,6 +43,25 @@ export default function Navbar() {
         {/* Links y usuario */}
         <div className="flex items-center gap-6">
 
+          {/* Carrito SIEMPRE visible */}
+          <Link to="/cart" className="relative group">
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              strokeWidth={2} 
+              stroke="currentColor" 
+              className="w-6 h-6 text-gray-200 group-hover:text-yellow-400 transition"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 2.25h1.5l2.25 12.75h12.75l2.25-9H6.75M6 21a.75.75 0 110-1.5.75.75 0 010 1.5zm12 0a.75.75 0 110-1.5.75.75 0 010 1.5z" />
+            </svg>
+            {totalQuantity > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                {totalQuantity}
+              </span>
+            )}
+          </Link>
+
           {!user && (
             <div className="flex gap-4">
               <Link 
@@ -61,41 +80,19 @@ export default function Navbar() {
           )}
 
           {user && (
-            <div className="flex items-center gap-4">
+            <div className="ml-4 relative" ref={dropdownRef}>
 
-              {/* Carrito */}
-              <Link to="/cart" className="relative group">
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  fill="none" 
-                  viewBox="0 0 24 24" 
-                  strokeWidth={2} 
-                  stroke="currentColor" 
-                  className="w-6 h-6 text-gray-200 group-hover:text-yellow-400 transition"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 2.25h1.5l2.25 12.75h12.75l2.25-9H6.75M6 21a.75.75 0 110-1.5.75.75 0 010 1.5zm12 0a.75.75 0 110-1.5.75.75 0 010 1.5z" />
-                </svg>
-                {totalQuantity > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                    {totalQuantity}
-                  </span>
-                )}
-              </Link>
+              {/* Avatar */}
+              <div
+                onClick={() => setOpenDropdown(!openDropdown)}
+                title={user.name}
+                className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-gray-900 font-bold cursor-pointer hover:bg-yellow-500 transition"
+              >
+                {user.name.charAt(0).toUpperCase()}
+              </div>
 
-              {/* Separador para no superponer */}
-              <div className="ml-4 relative" ref={dropdownRef}>
-
-                {/* Avatar */}
-                <div
-                  onClick={() => setOpenDropdown(!openDropdown)}
-                  title={user.name}
-                  className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-gray-900 font-bold cursor-pointer hover:bg-yellow-500 transition"
-                >
-                  {user.name.charAt(0).toUpperCase()}
-                </div>
-
-                {/* Dropdown */}
-                {openDropdown && (
+              {/* Dropdown */}
+              {openDropdown && (
                 <div className="absolute right-0 top-full mt-2 w-48 bg-gray-800 rounded-lg shadow-lg border border-gray-700 overflow-hidden z-10">
                   <Link
                     to="/profile"
@@ -121,8 +118,6 @@ export default function Navbar() {
                   </button>
                 </div>
               )}
-
-              </div>
 
             </div>
           )}

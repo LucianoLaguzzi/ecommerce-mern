@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { useAuth } from "../context/AuthContext";
 
 function Cart() {
   const {
@@ -17,6 +18,7 @@ function Cart() {
 
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { user } = useAuth(); // 👈 saber si está logueado
   const token = localStorage.getItem("auth") 
     ? JSON.parse(localStorage.getItem("auth")).token 
     : null;
@@ -31,7 +33,7 @@ function Cart() {
       return;
     }
 
-    // 🚨 Validar stock antes de enviar al backend
+    //Validar stock antes de enviar al backend
     const sinStock = cartItems.filter(i => i.stock <= 0);
     const cantidadExcedida = cartItems.filter(i => i.quantity > i.stock);
 
@@ -43,6 +45,21 @@ function Cart() {
           ${sinStock.length > 0 ? `<p>Los siguientes productos no tienen stock: <b>${sinStock.map(p => p.name).join(", ")}</b></p>` : ""}
           ${cantidadExcedida.length > 0 ? `<p>Algunos productos superan el stock disponible: <b>${cantidadExcedida.map(p => p.name).join(", ")}</b></p>` : ""}
         `,
+      });
+      return;
+    }
+
+    // Si NO hay usuario, obligar a loguearse
+    if (!user || !token) {
+      Swal.fire({
+        icon: "warning",
+        title: "Inicia sesión para comprar",
+        text: "Necesitas una cuenta para finalizar la compra.",
+        confirmButtonText: "Ir a login",
+      }).then((res) => {
+        if (res.isConfirmed) {
+          navigate("/login?redirect=/cart"); // redirige al login
+        }
       });
       return;
     }
@@ -103,9 +120,16 @@ function Cart() {
 
                     {item.stock <= 0 ? (
                       <p className="text-red-500 text-sm">¡Sin stock!</p>
-                    ) : item.stock <= 5 ? (
-                      <p className="text-yellow-500 text-sm">Quedan pocos: {item.stock}</p>
+                    ) : item.quantity >= item.stock ? (
+                      <p className="text-red-500 text-sm">¡Sin stock!</p>
+                    ) : (item.stock - item.quantity) <= 5 ? (
+                      <p className="text-yellow-500 text-sm">
+                        {item.stock - item.quantity === 1
+                          ? "¡Última unidad disponible!"
+                          : `¡Quedan ${item.stock - item.quantity} unidades!`}
+                      </p>
                     ) : null}
+                    
                   </div>
                 </div>
 
