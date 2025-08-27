@@ -4,20 +4,23 @@ import User from '../models/User.js'
 
 //Retorna data de usuario en sesion
 const getUserProfile = asyncHandler(async (req, res) => {
-  const user = req.user
+  const user = req.user;
 
   if (user) {
     res.json({
       _id: user._id,
       name: user.name,
       email: user.email,
-      isAdmin: user.isAdmin
-    })
+      phone: user.phone,
+      address: user.address,
+      isAdmin: user.isAdmin,
+      createdAt: user.createdAt
+    });
   } else {
-    res.status(404)
-    throw new Error('Usuario no encontrado')
+    res.status(404);
+    throw new Error('Usuario no encontrado');
   }
-})
+});
 
 // Listar todos los usuarios (admin)
 const getUsers = asyncHandler(async(req,res) =>{
@@ -58,5 +61,37 @@ const updateUser = asyncHandler(async(req,res) =>{
   }
 })
 
+//Actualizar perfil (publico)
+const updateUserProfile = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id)
 
-export { getUserProfile, getUsers, deleteUser, updateUser }
+  if (user) {
+    user.name = req.body.name || user.name
+    user.email = req.body.email || user.email
+    user.phone = req.body.phone || user.phone
+    user.address = req.body.address || user.address
+
+    if (req.body.password) {
+      user.password = req.body.password
+    }
+
+    const updatedUser = await user.save()
+
+    res.json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      phone: updatedUser.phone,
+      address: updatedUser.address,
+      isAdmin: updatedUser.isAdmin,
+      createdAt: updatedUser.createdAt
+    })
+  } else {
+    res.status(404)
+    throw new Error("Usuario no encontrado")
+  }
+})
+
+
+
+export { getUserProfile, getUsers, deleteUser, updateUser, updateUserProfile }

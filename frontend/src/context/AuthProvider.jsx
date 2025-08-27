@@ -8,7 +8,7 @@ const STORAGE_KEY = "auth";
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);   // { _id, name, email, isAdmin }
   const [token, setToken] = useState(null); // string
-  const [loadingAuth, setLoadingAuth] = useState(true); // <- NUEVO
+  const [loadingAuth, setLoadingAuth] = useState(true);
 
   // Hidratar desde localStorage al arrancar
   useEffect(() => {
@@ -60,9 +60,10 @@ export default function AuthProvider({ children }) {
   };
 
   const value = useMemo(
-    () => ({ user, token, login, logout, loadingAuth }),
+    () => ({ user, token, login, logout, setUser, loadingAuth }),
     [user, token, loadingAuth]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
+

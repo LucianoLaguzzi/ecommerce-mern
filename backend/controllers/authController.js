@@ -1,4 +1,4 @@
-//Exclusivo para login y registro
+// Exclusivo para login y registro
 import User from '../models/User.js'
 import jwt from 'jsonwebtoken'
 
@@ -9,20 +9,23 @@ const generarToken = (userId) => {
 }
 
 export const registerUser = async (req, res) => {
-  const { name, email, password } = req.body
+  const { name, email, password, phone, address } = req.body;
 
   const userExistente = await User.findOne({ email })
   if (userExistente) {
     return res.status(400).json({ message: 'El usuario ya existe' })
   }
 
-  const nuevoUsuario = await User.create({ name, email, password })
+  const nuevoUsuario = await User.create({ name, email, password, phone, address });
 
   res.status(201).json({
     _id: nuevoUsuario._id,
     name: nuevoUsuario.name,
     email: nuevoUsuario.email,
+    phone: nuevoUsuario.phone,
+    address: nuevoUsuario.address,
     isAdmin: nuevoUsuario.isAdmin,
+    createdAt: nuevoUsuario.createdAt,
     token: generarToken(nuevoUsuario._id)
   })
 }
@@ -37,7 +40,10 @@ export const loginUser = async (req, res) => {
       _id: usuario._id,
       name: usuario.name,
       email: usuario.email,
+      phone: usuario.phone,
+      address: usuario.address,
       isAdmin: usuario.isAdmin,
+      createdAt: usuario.createdAt,
       token: generarToken(usuario._id)
     })
   } else {

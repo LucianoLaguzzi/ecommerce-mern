@@ -11,16 +11,20 @@ function Cart() {
     removeFromCart,
     increaseQuantity,
     decreaseQuantity,
-    clearCart
+    clearCart,
+    setQuantity, 
   } = useCart();
 
-  const total = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const total = cartItems.reduce(
+    (acc, item) => acc + item.price * item.quantity,
+    0
+  );
 
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { user } = useAuth(); // 👈 saber si está logueado
-  const token = localStorage.getItem("auth") 
-    ? JSON.parse(localStorage.getItem("auth")).token 
+  const { user } = useAuth();
+  const token = localStorage.getItem("auth")
+    ? JSON.parse(localStorage.getItem("auth")).token
     : null;
 
   const handleCheckout = async () => {
@@ -33,17 +37,29 @@ function Cart() {
       return;
     }
 
-    //Validar stock antes de enviar al backend
-    const sinStock = cartItems.filter(i => i.stock <= 0);
-    const cantidadExcedida = cartItems.filter(i => i.quantity > i.stock);
+    // Validar stock antes de enviar al backend
+    const sinStock = cartItems.filter((i) => i.stock <= 0);
+    const cantidadExcedida = cartItems.filter((i) => i.quantity > i.stock);
 
     if (sinStock.length > 0 || cantidadExcedida.length > 0) {
       Swal.fire({
         icon: "error",
         title: "Stock insuficiente",
         html: `
-          ${sinStock.length > 0 ? `<p>Los siguientes productos no tienen stock: <b>${sinStock.map(p => p.name).join(", ")}</b></p>` : ""}
-          ${cantidadExcedida.length > 0 ? `<p>Algunos productos superan el stock disponible: <b>${cantidadExcedida.map(p => p.name).join(", ")}</b></p>` : ""}
+          ${
+            sinStock.length > 0
+              ? `<p>Los siguientes productos no tienen stock: <b>${sinStock
+                  .map((p) => p.name)
+                  .join(", ")}</b></p>`
+              : ""
+          }
+          ${
+            cantidadExcedida.length > 0
+              ? `<p>Algunos productos superan el stock disponible: <b>${cantidadExcedida
+                  .map((p) => p.name)
+                  .join(", ")}</b></p>`
+              : ""
+          }
         `,
       });
       return;
@@ -58,7 +74,7 @@ function Cart() {
         confirmButtonText: "Ir a login",
       }).then((res) => {
         if (res.isConfirmed) {
-          navigate("/login?redirect=/cart"); // redirige al login
+          navigate("/login?redirect=/cart");
         }
       });
       return;
@@ -84,7 +100,6 @@ function Cart() {
       });
 
       setTimeout(() => navigate("/"), 2500);
-
     } catch (err) {
       Swal.fire({
         icon: "error",
@@ -103,79 +118,109 @@ function Cart() {
       {cartItems.length === 0 ? (
         <div className="text-center text-gray-600 mt-10">
           <p className="mb-2">El carrito está vacío.</p>
-          <Link to="/" className="text-blue-500 underline">Ver productos</Link>
+          <Link to="/" className="text-blue-500 underline">
+            Ver productos
+          </Link>
         </div>
       ) : (
         <>
           <ul>
-            {cartItems.map((item) => (
-              <li key={item._id} className="flex items-center justify-between border-b py-4 min-h-[84px]">
-                <div className="flex items-center space-x-4 min-w-0">
-                  {item.image && (
-                    <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded" />
-                  )}
-                  <div className="min-w-0">
-                    <p className="font-semibold truncate">{item.name}</p>
-                    <p className="text-gray-600">${item.price} x {item.quantity}</p>
+            {cartItems.map((item) => {
+              const stockNum = Number(item.stock) || 0;
+              const maxPermitido = stockNum > 0 ? stockNum : 1;
 
-                    {item.stock <= 0 ? (
-                      <p className="text-red-500 text-sm">¡Sin stock!</p>
-                    ) : item.quantity >= item.stock ? (
-                      <p className="text-red-500 text-sm">¡Sin stock!</p>
-                    ) : (item.stock - item.quantity) <= 5 ? (
-                      <p className="text-yellow-500 text-sm">
-                        {item.stock - item.quantity === 1
-                          ? "¡Última unidad disponible!"
-                          : `¡Quedan ${item.stock - item.quantity} unidades!`}
+              return (
+                <li
+                  key={item._id}
+                  className="flex items-center justify-between border-b py-4 min-h-[84px]"
+                >
+                  <div className="flex items-center space-x-4 min-w-0">
+                    {item.image && (
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-16 h-16 object-cover rounded"
+                      />
+                    )}
+                    <div className="min-w-0">
+                      <p className="font-semibold truncate">{item.name}</p>
+                      <p className="text-gray-600">
+                        ${item.price} x {item.quantity}
                       </p>
-                    ) : null}
-                    
-                  </div>
-                </div>
 
-                <div className="flex flex-col items-end space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <button
-                      type="button"
-                      onClick={() => decreaseQuantity(item._id)}
-                      disabled={item.quantity === 1}
-                      className={`px-3 py-1 rounded ${
-                        item.quantity === 1 ? "bg-gray-300 text-gray-700 cursor-not-allowed" :
-                        "bg-gray-700 text-white hover:bg-gray-800"
-                      }`}
-                    >
-                      -
-                    </button>
-
-                    <span className="px-3">{item.quantity}</span>
-
-                    <button
-                      type="button"
-                      onClick={() => increaseQuantity(item._id)}
-                      disabled={item.quantity >= (Number(item.stock) || 0) || item.stock <= 0}
-                      className={`px-3 py-1 rounded ${
-                        item.quantity >= (Number(item.stock) || 0) || item.stock <= 0
-                          ? "bg-gray-300 text-gray-700 cursor-not-allowed opacity-70"
-                          : "bg-gray-700 text-white hover:bg-gray-800"
-                      }`}
-                    >
-                      +
-                    </button>
+                      {stockNum <= 0 ? (
+                        <p className="text-red-500 text-sm">¡Sin más stock!</p>
+                      ) : item.quantity >= stockNum ? (
+                        <p className="text-red-500 text-sm">¡Sin más stock!</p>
+                      ) : stockNum - item.quantity <= 5 ? (
+                        <p className="text-yellow-500 text-sm">
+                          {stockNum - item.quantity === 1
+                            ? "¡Última unidad disponible!"
+                            : `¡Quedan ${stockNum - item.quantity} unidades!`}
+                        </p>
+                      ) : null}
+                    </div>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => removeFromCart(item._id)}
-                    className="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded"
-                  >
-                    Eliminar
-                  </button>
-                </div>
-              </li>
-            ))}
+                  <div className="flex flex-col items-end space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <button
+                        type="button"
+                        onClick={() => decreaseQuantity(item._id)}
+                        disabled={item.quantity === 1}
+                        className={`px-3 py-1 rounded ${
+                          item.quantity === 1
+                            ? "bg-gray-300 text-gray-700 cursor-not-allowed"
+                            : "bg-gray-700 text-white hover:bg-gray-800"
+                        }`}
+                        aria-label="Disminuir cantidad"
+                      >
+                        -
+                      </button>
+
+                      {/* INPUT EDITABLE */}
+                     <input
+                        type="number"
+                        min={1}
+                        max={item.stock || 1}
+                        value={item.quantity}
+                        onChange={(e) => setQuantity(item._id, e.target.value)}
+                        onBlur={(e) => setQuantity(item._id, e.target.value)}
+                        onFocus={(e) => e.target.select()}  // <--- ESTA LÍNEA
+                        className="w-12 text-center border rounded"
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() => increaseQuantity(item._id)}
+                        disabled={item.quantity >= maxPermitido || stockNum <= 0}
+                        className={`px-3 py-1 rounded ${
+                          item.quantity >= maxPermitido || stockNum <= 0
+                            ? "bg-gray-300 text-gray-700 cursor-not-allowed opacity-70"
+                            : "bg-gray-700 text-white hover:bg-gray-800"
+                        }`}
+                        aria-label="Aumentar cantidad"
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => removeFromCart(item._id)}
+                      className="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded"
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
 
-          <h3 className="text-xl font-semibold mt-6">Total: ${total.toFixed(2)}</h3>
+          <h3 className="text-xl font-semibold mt-6">
+            Total: ${total.toFixed(2)}
+          </h3>
 
           <button
             type="button"

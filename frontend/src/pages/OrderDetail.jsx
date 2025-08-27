@@ -41,7 +41,7 @@ export default function OrderDetail() {
 
   return (
     <div className="max-w-3xl mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">Orden #{order._id}</h2>
+      <h2 className="text-2xl font-bold mb-4">Orden #{order._id.slice(-6).toUpperCase()}</h2>
       <p>Estado: <span className="capitalize">{order.status}</span></p>
       <p>Total: ${order.total.toFixed(2)}</p>
       <p>Fecha: {new Date(order.createdAt).toLocaleString()}</p>
@@ -50,7 +50,8 @@ export default function OrderDetail() {
       <ul className="ml-4">
         {order.items.map((item) => (
           <li key={item.productId} className="py-1">
-            {item.name} x {item.quantity} (${item.price.toFixed(2)} cada uno)
+           {item.name} x {item.quantity} (${item.price.toFixed(2)} c/u) = ${(item.price * item.quantity).toFixed(2)}
+
           </li>
         ))}
       </ul>

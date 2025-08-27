@@ -19,6 +19,7 @@ export default function Login() {
   const searchParams = new URLSearchParams(location.search);
   const redirect = searchParams.get("redirect") || "/";
 
+  //Verifica los datos en authController y lleva los datos al AuthProvider
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -33,6 +34,9 @@ export default function Login() {
         name: data.name,
         email: data.email,
         isAdmin: data.isAdmin,
+        phone: data.phone,
+        address: data.address,
+        createdAt: data.createdAt
       });
 
       // En lugar de siempre ir al home, usamos el redirect

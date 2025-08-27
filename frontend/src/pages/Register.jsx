@@ -1,4 +1,3 @@
-// src/pages/Register.jsx
 import { useState } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
@@ -7,24 +6,29 @@ import { useNavigate } from "react-router-dom";
 export default function Register() {
   const { login }  = useAuth();
   const navigate   = useNavigate();
-  const [name, setName]         = useState("");
-  const [email, setEmail]       = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError]       = useState("");
+  const [error, setError] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     try {
       const { data } = await axios.post("http://localhost:5000/api/auth/register", {
-        name, email, password,
+        name, email, password, phone, address
       });
-      // data = { _id, name, email, isAdmin, token }
+      // data = { _id, name, email, phone, address, isAdmin, createdAt, token }
       login({
         token: data.token,
         _id: data._id,
         name: data.name,
         email: data.email,
+        phone: data.phone,
+        address: data.address,
+        createdAt: data.createdAt,
         isAdmin: data.isAdmin,
       });
       navigate("/");
@@ -65,6 +69,20 @@ export default function Register() {
           onChange={(e) => setPassword(e.target.value)}
           autoComplete="new-password"
           required
+        />
+        <input
+          type="text"
+          placeholder="Teléfono"
+          className="w-full border p-2 rounded"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Dirección"
+          className="w-full border p-2 rounded"
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
         />
         <button type="submit" className="w-full bg-green-500 text-white p-2 rounded">
           Registrarse

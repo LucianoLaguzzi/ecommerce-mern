@@ -18,8 +18,8 @@ const CartProvider = ({ children }) => {
       if (guest) {
         const guestItems = JSON.parse(guest);
 
-        guestItems.forEach(g => {
-          const idx = merged.findIndex(i => String(i._id) === String(g._id));
+        guestItems.forEach((g) => {
+          const idx = merged.findIndex((i) => String(i._id) === String(g._id));
           if (idx !== -1) {
             merged[idx].quantity += g.quantity;
           } else {
@@ -46,7 +46,7 @@ const CartProvider = ({ children }) => {
     }
   }, [cartItems, user]);
 
-  // AHORA acepta cantidad (por defecto 1) y la suma correctamente
+  // Agregar al carrito (suma cantidad)
   const addToCart = (product, cantidad = 1) => {
     const qty = Math.max(1, Math.floor(Number(cantidad) || 1));
 
@@ -62,7 +62,7 @@ const CartProvider = ({ children }) => {
 
     toast.success(`Añadiste ${qty} × ${product.name} al carrito`, {
       duration: 3000,
-      style: { marginTop: "50px" }, // respeta tu offset
+      style: { marginTop: "50px" },
     });
 
     return null;
@@ -76,12 +76,13 @@ const CartProvider = ({ children }) => {
 
   const clearCart = () => setCartItems([]);
 
-  // En el carrito seguimos respetando tope por stock para +/-
+  // + / - con tope por stock (figurativo)
   const increaseQuantity = (productId) => {
     setCartItems((prev) =>
       prev.map((i) => {
         if (String(i._id) !== String(productId)) return i;
-        if (i.quantity >= i.stock) return i;
+        if (i.quantity >= (Number(i.stock) || 0)) return i;
+        if ((Number(i.stock) || 0) <= 0) return i;
         return { ...i, quantity: i.quantity + 1 };
       })
     );
@@ -97,6 +98,33 @@ const CartProvider = ({ children }) => {
     );
   };
 
+  // 🔹 NUEVO: setear cantidad exacta (desde input)
+  const setQuantity = (productId, cantidad) => {
+    setCartItems((prev) =>
+      prev.map((i) => {
+        if (String(i._id) !== String(productId)) return i;
+
+        const stock = Number(i.stock) || 0;
+        let n = Math.floor(Number(cantidad));
+
+        // Si no es número válido, forzamos a 1 para no romper totales
+        if (!Number.isFinite(n)) n = 1;
+
+        // mínimo 1
+        n = Math.max(1, n);
+
+        // si hay stock (>0), tope = stock; si no hay stock, queda 1
+        if (stock > 0) {
+          n = Math.min(n, stock);
+        } else {
+          n = 1;
+        }
+
+        return { ...i, quantity: n };
+      })
+    );
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -106,6 +134,7 @@ const CartProvider = ({ children }) => {
         clearCart,
         increaseQuantity,
         decreaseQuantity,
+        setQuantity,
       }}
     >
       {children}
