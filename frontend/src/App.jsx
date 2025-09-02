@@ -9,6 +9,10 @@ import Profile from "./pages/Profile";
 import PrivateRoute from "./components/PrivateRoute";
 import MyOrders from "./pages/MyOrders";
 import OrderDetail from "./pages/OrderDetail";
+import AdminLayout from "./pages/Admin/AdminLayout";
+import AdminRoute from "./components/AdminRoute";
+import AccessDenied from "./pages/AccessDenied";
+
 import { Toaster } from "react-hot-toast";
 
 
@@ -16,7 +20,6 @@ function App() {
   return (
     <Router>
       <Navbar />
-      <div className="container mx-auto p-4">
         <Routes>
           <Route path="/" element={<Home />} />
 
@@ -28,6 +31,7 @@ function App() {
               </PrivateRoute>
             }
           />
+
           <Route
             path="/myorders"
             element={
@@ -37,6 +41,16 @@ function App() {
             }
           />
 
+          {/* Panel de control admin */}
+          <Route 
+            path="/admin/*"       //wildcard para sub-rutas internas
+            element={
+              <AdminRoute>
+                <AdminLayout />
+              </AdminRoute>
+            } 
+          />
+
           
           {/* Rutas públicas */}
           <Route path="/login" element={<Login />} />
@@ -44,8 +58,10 @@ function App() {
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/orders/:id" element={<OrderDetail />} />
+
+          <Route path="/forbidden" element={<AccessDenied />} />
         </Routes>
-      </div>
+
       
        <Toaster position="top-right" reverseOrder={false} />
     </Router>

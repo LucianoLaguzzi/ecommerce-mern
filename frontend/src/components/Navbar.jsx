@@ -81,9 +81,22 @@ export default function Navbar() {
                   <div className="absolute right-0 top-full mt-2 w-48 bg-gray-800 rounded-lg shadow-lg border border-gray-700 overflow-hidden z-10">
                     <Link to="/profile" className="block px-4 py-3 text-gray-200 hover:bg-gray-700 transition" onClick={() => setOpenDropdown(false)}>Mi Perfil</Link>
                     <Link to="/myorders" className="block px-4 py-3 text-gray-200 hover:bg-gray-700 transition" onClick={() => setOpenDropdown(false)}>Mis Compras</Link>
+                    {/* Panel admin */}
+                    {user.isAdmin && (
+                      <Link 
+                        to="/admin" 
+                        className="block px-4 py-3 text-gray-200 hover:bg-gray-700 transition"
+                        onClick={() => setOpenDropdown(false)}
+                      >
+                        Panel de Admin
+                      </Link>
+                    )}
+
                     <button onClick={handleLogout} className="w-full text-left px-4 py-3 text-gray-200 hover:bg-gray-700 transition">Cerrar Sesión</button>
+
                   </div>
                 )}
+
               </div>
             )}
 

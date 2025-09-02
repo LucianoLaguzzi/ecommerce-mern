@@ -8,7 +8,7 @@ const router = express.Router()
 
 // Perfil propio
 router.get('/profile', proteger, getUserProfile) //Obtener los datos del perfil logueado
-router.put('/profile', proteger, updateUserProfile)
+router.put('/profile', proteger, updateUserProfile) //Actualiza el perfil de usuario
 
 
 // Admin: gestión de usuarios
