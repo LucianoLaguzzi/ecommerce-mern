@@ -8,6 +8,7 @@ export default function AdminUsers() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
+ useEffect(() => {
   const fetchUsers = async () => {
     try {
       const res = await fetch("http://localhost:5000/api/users", {
@@ -24,9 +25,11 @@ export default function AdminUsers() {
     }
   };
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+  fetchUsers();
+}, [token]); // depende solo del token
+
+
+
 
   const handleDelete = async (id) => {
     if (id === user._id) {

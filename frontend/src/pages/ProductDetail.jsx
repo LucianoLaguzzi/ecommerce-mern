@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import useCart from "../context/useCart";
+import { formatPrice } from "../utils/formatPrice";
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -44,7 +45,7 @@ export default function ProductDetail() {
       <img src={product.image} alt={product.name} className="w-full h-64 object-cover rounded-lg mb-4" />
       <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
       <p className="text-gray-600 mb-4">{product.description}</p>
-      <p className="text-xl font-semibold text-green-600 mb-4">${product.price}</p>
+      <p className="text-xl font-semibold text-green-600 mb-4">${formatPrice(product.price)}</p>
 
       <div className="mt-2">
         {product.stock <= 0 ? (

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { Link } from "react-router-dom";
+import { formatPrice } from "../utils/formatPrice"
 
 export default function MyOrders() {
   const [orders, setOrders] = useState([]);
@@ -41,13 +42,12 @@ export default function MyOrders() {
             >
               Orden #{order._id.slice(-6).toUpperCase()}
             </Link>
-            <p>Total: ${order.total.toFixed(2)}</p>
+            <p>Total: ${formatPrice(order.total)}</p>
             <p>Estado:  <span 
                           className={`px-2 py-1 rounded-full text-sm font-medium border
                               ${order.status.toLowerCase() === "pendiente" ? "text-yellow-600 border-yellow-600" : ""}
-                              ${order.status.toLowerCase() === "enviado" ? "text-blue-600 border-blue-600" : ""}
-                              ${order.status.toLowerCase() === "completado" ? "text-green-600 border-green-600" : ""}
-                              ${order.status.toLowerCase() === "cancelado" ? "text-red-600 border-red-600" : ""}
+                              ${order.status.toLowerCase() === "completada" ? "text-green-600 border-green-600" : ""}
+                              ${order.status.toLowerCase() === "cancelada" ? "text-red-600 border-red-600" : ""}
                           `}
                         >
                           {order.status}

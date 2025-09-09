@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
+import { formatPrice } from "../utils/formatPrice"
 
 export default function OrderDetail() {
   const { id } = useParams();
@@ -43,14 +44,14 @@ export default function OrderDetail() {
     <div className="max-w-3xl mx-auto p-4">
       <h2 className="text-2xl font-bold mb-4">Orden #{order._id.slice(-6).toUpperCase()}</h2>
       <p>Estado: <span className="capitalize">{order.status}</span></p>
-      <p>Total: ${order.total.toFixed(2)}</p>
+      <p>Total: ${formatPrice(order.total)}</p>
       <p>Fecha: {new Date(order.createdAt).toLocaleString()}</p>
 
       <h3 className="text-xl mt-4 font-semibold">Productos:</h3>
       <ul className="ml-4">
         {order.items.map((item) => (
           <li key={item.productId} className="py-1">
-           {item.name} x {item.quantity} (${item.price.toFixed(2)} c/u) = ${(item.price * item.quantity).toFixed(2)}
+           {item.name} x {item.quantity}  (${formatPrice(item.price)} c/u) = ${formatPrice(item.price * item.quantity)}
 
           </li>
         ))}

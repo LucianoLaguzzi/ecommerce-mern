@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { formatPrice } from "../utils/formatPrice";
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -16,8 +17,6 @@ export default function Home() {
     };
 
     cargarProductos ();
-
-    
   }, []);
 
 
@@ -40,7 +39,7 @@ export default function Home() {
                 className="w-full h-48 object-cover mb-4"
               />
               <h2 className="text-lg font-bold">{product.name}</h2>
-              <p className="text-gray-600">${product.price}</p>
+              <p className="text-gray-600">${formatPrice(product.price)}</p>
               <Link
                 to={`/product/${product._id}`}
                 className="text-blue-500 hover:underline"

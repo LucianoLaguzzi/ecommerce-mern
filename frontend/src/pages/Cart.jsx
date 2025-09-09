@@ -4,6 +4,7 @@ import { useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useAuth } from "../context/AuthContext";
+import { formatPrice } from "../utils/formatPrice"
 
 function Cart() {
   const {
@@ -145,7 +146,7 @@ function Cart() {
                     <div className="min-w-0">
                       <p className="font-semibold truncate">{item.name}</p>
                       <p className="text-gray-600">
-                        ${item.price} x {item.quantity}
+                        ${formatPrice(total)} x {item.quantity}
                       </p>
 
                       {stockNum <= 0 ? (
@@ -219,7 +220,7 @@ function Cart() {
           </ul>
 
           <h3 className="text-xl font-semibold mt-6">
-            Total: ${total.toFixed(2)}
+            Total: ${formatPrice(total)}
           </h3>
 
           <button

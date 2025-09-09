@@ -1,5 +1,33 @@
 import Product from '../models/Product.js'
 import asyncHandler from 'express-async-handler'
+import cloudinary from '../config/cloudinary.js'
+
+// helper para subir a Cloudinary con buffer (stream)
+const streamUpload = (buffer, folder = "ecommerce") => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder },
+      (error, result) => {
+        if (result) resolve(result)
+        else reject(error)
+      }
+    )
+    stream.end(buffer)
+  })
+}
+
+// helper para borrar de Cloudinary usando la URL
+const deleteFromCloudinary = async (imageUrl) => {
+  if (!imageUrl) return
+  try {
+    const publicId = imageUrl.split('/').slice(-2).join('/').split('.')[0] 
+
+    await cloudinary.uploader.destroy(publicId)
+    console.log(`Imagen eliminada en Cloudinary`)
+  } catch (error) {
+    console.error("Error eliminando imagen de Cloudinary:", error)
+  }
+}
 
 // GET /api/products (público)
 const getProducts = asyncHandler(async (req, res) => {
@@ -10,9 +38,8 @@ const getProducts = asyncHandler(async (req, res) => {
 // GET /api/products/:id (público)
 const getProductById = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id)
-  if (product) {
-    res.json(product)
-  } else {
+  if (product) res.json(product)
+  else {
     res.status(404)
     throw new Error('Producto no encontrado')
   }
@@ -20,9 +47,27 @@ const getProductById = asyncHandler(async (req, res) => {
 
 // POST /api/products (admin)
 const createProduct = asyncHandler(async (req, res) => {
-  const { name, description, price, stock, image } = req.body
+  const { name, description, price, stock } = req.body
 
-  const product = new Product({ name, description, price, stock, image })
+  if (!name || !description || !price || !stock) {
+    res.status(400)
+    throw new Error('Todos los campos son obligatorios')
+  }
+
+  let imageUrl = ""
+
+  if (req.file) {
+    const uploadResult = await streamUpload(req.file.buffer, "ecommerce")
+    imageUrl = uploadResult.secure_url
+  }
+
+  const product = new Product({
+    name,
+    description,
+    price,
+    stock,
+    image: imageUrl
+  })
 
   const createdProduct = await product.save()
   res.status(201).json(createdProduct)
@@ -30,35 +75,49 @@ const createProduct = asyncHandler(async (req, res) => {
 
 // PUT /api/products/:id (admin)
 const updateProduct = asyncHandler(async (req, res) => {
-  const { name, description, price, stock, image } = req.body
-
+  const { name, description, price, stock } = req.body
   const product = await Product.findById(req.params.id)
 
-  if (product) {
-    product.name = name || product.name
-    product.description = description || product.description
-    product.price = price || product.price
-    product.stock = stock || product.stock
-    product.image = image || product.image
-
-    const updated = await product.save()
-    res.json(updated)
-  } else {
+  if (!product) {
     res.status(404)
     throw new Error('Producto no encontrado')
   }
+
+  // actualizar datos
+  product.name = name || product.name
+  product.description = description || product.description
+  product.price = price || product.price
+  product.stock = stock || product.stock
+
+  // si viene nueva imagen, borrar la anterior y subir la nueva
+  if (req.file) {
+    if (product.image) {
+      await deleteFromCloudinary(product.image)
+    }
+
+    const uploadResult = await streamUpload(req.file.buffer, "ecommerce")
+    product.image = uploadResult.secure_url
+  }
+
+  const updated = await product.save()
+  res.json(updated)
 })
 
 // DELETE /api/products/:id (admin)
 const deleteProduct = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id)
-  if (product) {
-    await product.remove()
-    res.json({ message: 'Producto eliminado' })
-  } else {
+  if (!product) {
     res.status(404)
     throw new Error('Producto no encontrado')
   }
+
+  // eliminar imagen en Cloudinary si existía
+  if (product.image) {
+    await deleteFromCloudinary(product.image)
+  }
+
+  await product.deleteOne()
+  res.json({ message: 'Producto eliminado' })
 })
 
 export {
