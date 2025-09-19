@@ -2,14 +2,16 @@ import { Link } from "react-router-dom";
 
 export default function AccessDenied() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[70vh] text-center">
-      <h1 className="text-3xl font-bold text-red-600 mb-4">Acceso Denegado</h1>
-      <p className="text-gray-700 mb-6">
-        No tenés permisos para acceder a esta página.
+    <div className="flex flex-col items-center justify-start  min-h-[93.9vh] bg-gradient-to-b from-red-600 to-red-900 text-white text-center px-4 pt-40">
+      <h1 className="text-7xl font-extrabold mb-4">403</h1>
+      <h2 className="text-3xl font-bold mb-2">Acceso Denegado</h2>
+      <p className="text-lg mb-8 max-w-xl">
+        No tenés permisos para ingresar a esta página.  
+        Si creés que esto es un error, contactá al administrador.
       </p>
       <Link
         to="/"
-        className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+        className="bg-white text-red-700 px-6 py-3 rounded-lg font-semibold shadow-lg hover:bg-red-100 transition-colors"
       >
         Volver al inicio
       </Link>

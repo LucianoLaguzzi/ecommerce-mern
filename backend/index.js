@@ -6,15 +6,10 @@ import authRoutes from './routes/authRoutes.js'
 import userRoutes from './routes/userRoutes.js'
 import productRoutes from './routes/productRoutes.js'
 import orderRoutes from './routes/orderRoutes.js';
-import Stripe from "stripe";
 
 dotenv.config()
 
 const app = express()
-
-
-// Inicializar Stripe con tu clave secreta
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // Conectar a MongoDB
 conectarDB()

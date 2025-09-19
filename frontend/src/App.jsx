@@ -12,6 +12,7 @@ import OrderDetail from "./pages/OrderDetail";
 import AdminLayout from "./pages/Admin/AdminLayout";
 import AdminRoute from "./components/AdminRoute";
 import AccessDenied from "./pages/AccessDenied";
+import NotFound from "./pages/NotFound";
 
 import { Toaster } from "react-hot-toast";
 
@@ -60,6 +61,8 @@ function App() {
           <Route path="/orders/:id" element={<OrderDetail />} />
 
           <Route path="/forbidden" element={<AccessDenied />} />
+          <Route path="*" element={<NotFound />} />
+
         </Routes>
 
       

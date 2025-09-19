@@ -11,6 +11,9 @@ export default function ProductDetail() {
   const [error, setError] = useState("");
   const [localError, setLocalError] = useState(null);
 
+  const [zoomStyle, setZoomStyle] = useState({ display: "none" });
+  const [zoomActive, setZoomActive] = useState(false);
+
   const { addToCart } = useCart();
 
   useEffect(() => {
@@ -21,16 +24,12 @@ export default function ProductDetail() {
         setProduct(data);
         setLoading(false);
       } catch (err) {
-        setError("No se pudo cargar el producto" + err);
+        setError("No se pudo cargar el producto " + err);
         setLoading(false);
       }
     };
     mostrarProducto();
   }, [id]);
-
-  if (loading) return <p>Cargando producto...</p>;
-  if (error) return <p>{error}</p>;
-  if (!product) return <p>No se encontró el producto</p>;
 
   const handleAdd = () => {
     const error = addToCart(product);
@@ -40,28 +39,93 @@ export default function ProductDetail() {
     }
   };
 
-  return (
-    <div className="max-w-2xl mx-auto p-4">
-      <img src={product.image} alt={product.name} className="w-full h-64 object-cover rounded-lg mb-4" />
-      <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
-      <p className="text-gray-600 mb-4">{product.description}</p>
-      <p className="text-xl font-semibold text-green-600 mb-4">${formatPrice(product.price)}</p>
+  const handleMouseMove = (e) => {
+    if (!zoomActive) return;
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    const x = ((e.pageX - left - window.scrollX) / width) * 100;
+    const y = ((e.pageY - top - window.scrollY) / height) * 100;
 
-      <div className="mt-2">
-        {product.stock <= 0 ? (
-          <p className="text-red-500 font-semibold">¡Producto sin stock!</p>
-        ) : product.stock <= 5 ? (
-          <p className="text-yellow-500 font-semibold">¡Quedan pocos en stock!</p>
-        ) : null}
+    setZoomStyle({
+      display: "block",
+      backgroundImage: `url(${product.image})`,
+      backgroundPosition: `${x}% ${y}%`,
+      backgroundRepeat: "no-repeat",
+      backgroundSize: "200%",
+      transition: "background-position 0.1s",
+    });
+  };
+
+  const handleClick = () => {
+    setZoomActive(!zoomActive);
+    if (!zoomActive) {
+      setZoomStyle({
+        display: "block",
+        backgroundImage: `url(${product.image})`,
+        backgroundPosition: `50% 50%`,
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "200%",
+        transition: "background-position 0.1s",
+      });
+    } else {
+      setZoomStyle({ display: "none" });
+    }
+  };
+
+  if (loading) return <p className="text-center mt-12 text-gray-500">Cargando producto...</p>;
+  if (error) return <p className="text-center mt-12 text-red-500">{error}</p>;
+  if (!product) return <p className="text-center mt-12 text-gray-500">No se encontró el producto</p>;
+
+  return (
+    <div className="bg-gray-50 min-h-screen">
+      {/* Imagen con zoom */}
+      <div
+        className={`relative w-full h-[400px] md:h-[500px] lg:h-[600px] mx-auto overflow-hidden rounded-b-2xl shadow-lg ${zoomActive ? "cursor-zoom-out" : "cursor-zoom-in"}`}
+        onMouseMove={handleMouseMove}
+        onClick={handleClick}
+      >
+        <img
+          src={product.image}
+          alt={product.name}
+          className="w-full h-full object-contain bg-white shadow-inner rounded-lg transition-transform duration-300"
+        />
+
+        {/* Zoom */}
+        <div className="absolute inset-0 pointer-events-none" style={{ ...zoomStyle }}></div>
+
+        {/* Nombre sobre la imagen */}
+        <div className="absolute inset-0 bg-black/20 flex items-end p-6">
+          <h1 className="text-white text-3xl md:text-5xl font-extrabold drop-shadow-lg">
+            {product.name}
+          </h1>
+        </div>
       </div>
 
-      <button
-        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-2"
-        onClick={handleAdd}
-      >
-        Agregar al carrito
-      </button>
-      {localError && <p className="text-red-500 mt-1">{localError}</p>}
+      {/* Información */}
+      <div className="max-w-4xl mx-auto px-6 py-10 space-y-6">
+        <p className="text-4xl font-bold text-green-600">${formatPrice(product.price)}</p>
+
+        {product.stock <= 0 ? (
+          <p className="text-red-600 font-semibold text-lg">¡Producto sin stock!</p>
+        ) : product.stock <= 5 ? (
+          <p className="text-yellow-500 font-semibold text-lg">¡Quedan pocos en stock!</p>
+        ) : null}
+
+        <button
+          className={`w-full md:w-1/2 py-3 rounded-lg font-semibold text-white transition
+            ${product.stock > 0 ? "bg-orange-500 hover:bg-orange-600 shadow-md hover:shadow-lg" : "bg-gray-400 cursor-not-allowed"}`}
+          onClick={handleAdd}
+          disabled={product.stock <= 0}
+        >
+          {product.stock > 0 ? "Agregar al carrito" : "No disponible"}
+        </button>
+
+        <div className="mt-8">
+          <h2 className="text-2xl font-bold mb-3">Descripción</h2>
+          <p className="text-gray-700 leading-relaxed">{product.description}</p>
+        </div>
+
+        {localError && <p className="text-red-500 mt-2 font-medium">{localError}</p>}
+      </div>
     </div>
   );
 }

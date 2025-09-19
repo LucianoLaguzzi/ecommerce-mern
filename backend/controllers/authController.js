@@ -11,9 +11,16 @@ const generarToken = (userId) => {
 export const registerUser = async (req, res) => {
   const { name, email, password, phone, address } = req.body;
 
-  const userExistente = await User.findOne({ email })
-  if (userExistente) {
-    return res.status(400).json({ message: 'El usuario ya existe' })
+  // Verificar email duplicado
+  const usuarioExistente = await User.findOne({ email });
+  if (usuarioExistente) {
+    return res.status(400).json({ message: 'Ya existe un usuario con ese email' });
+  }
+
+  // Verificar nombre duplicado (opcional)
+  const nombreExistente = await User.findOne({ name });
+  if (nombreExistente) {
+    return res.status(400).json({ message: 'Ya existe un usuario con ese nombre' });
   }
 
   const nuevoUsuario = await User.create({ name, email, password, phone, address });
@@ -26,9 +33,9 @@ export const registerUser = async (req, res) => {
     address: nuevoUsuario.address,
     isAdmin: nuevoUsuario.isAdmin,
     createdAt: nuevoUsuario.createdAt,
-    token: generarToken(nuevoUsuario._id)
-  })
-}
+    token: generarToken(nuevoUsuario._id),
+  });
+};
 
 export const loginUser = async (req, res) => {
   const { email, password } = req.body
