@@ -76,10 +76,10 @@ export default function ProductDetail() {
   if (!product) return <p className="text-center mt-12 text-gray-500">No se encontró el producto</p>;
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-gray-50 min-h-[93vh]">
       {/* Imagen con zoom */}
       <div
-        className={`relative w-full h-[400px] md:h-[500px] lg:h-[600px] mx-auto overflow-hidden rounded-b-2xl shadow-lg ${zoomActive ? "cursor-zoom-out" : "cursor-zoom-in"}`}
+        className={`relative w-full h-[400px] md:h-[500px] lg:h-[500px] mx-auto overflow-hidden rounded-b-2xl shadow-lg ${zoomActive ? "cursor-zoom-out" : "cursor-zoom-in"}`}
         onMouseMove={handleMouseMove}
         onClick={handleClick}
       >

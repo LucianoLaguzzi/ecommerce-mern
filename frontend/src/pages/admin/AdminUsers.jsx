@@ -107,11 +107,12 @@ export default function AdminUsers() {
   return (
   <div>
     {/* Subtítulo centrado sobre la tabla */}
-    <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">
+     <h2 className="text-4xl font-extrabold mb-8 text-center text-purple-700">
       Gestión de Usuarios
     </h2>
 
-    <table className="min-w-full border border-gray-200 rounded-lg overflow-hidden">
+    <table className="min-w-full border border-gray-300 rounded-lg shadow-sm border-separate" style={{ borderSpacing: 0 }}>
+
       <thead className="bg-gray-200">
         <tr>
           <th className="px-6 py-3 text-left text-gray-700 font-bold uppercase text-sm tracking-wider">Nombre</th>
@@ -123,17 +124,17 @@ export default function AdminUsers() {
       
       <tbody>
         {users.map((u, i) => (
-          <tr key={u._id} className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-gray-100 transition-colors`}>
+          <tr className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-indigo-50 transition-colors`}>
             <td className="px-6 py-4 text-gray-800">{u.name}</td>
             <td className="px-6 py-4 text-gray-600">{u.email}</td>
             
-           <td className="px-6 py-4 text-center">
+            <td className="px-6 py-4 text-center">
               {u.isAdmin ? (
-                <span className="inline-block px-4 py-1 text-xs font-semibold text-indigo-700 bg-gradient-to-r from-indigo-100 to-indigo-200 rounded-full shadow-sm border border-indigo-200 transition-all hover:scale-105">
+                <span className="inline-block px-4 py-1 text-xs font-semibold text-indigo-700 bg-gradient-to-r from-indigo-100 to-indigo-200 rounded-full shadow-sm border border-indigo-200">
                   Admin
                 </span>
               ) : (
-                <span className="inline-block px-4 py-1 text-xs font-semibold text-gray-700 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full shadow-sm border border-gray-300 transition-all hover:scale-105">
+                <span className="inline-block px-4 py-1 text-xs font-semibold text-gray-700 bg-gray-200 rounded-full border border-gray-300">
                   Usuario
                 </span>
               )}
@@ -142,39 +143,43 @@ export default function AdminUsers() {
             <td className="px-6 py-4 text-center space-x-2">
               <button
                 onClick={() => handleToggleAdmin(u._id, u.isAdmin)}
-                className={`px-2 py-1 text-xs rounded border transition ${
+                className={`px-3 py-1 text-xs font-medium rounded transition ${
                   u._id === user._id
-                    ? "border-gray-300 text-gray-400 cursor-not-allowed"
-                    : "border-indigo-500 text-indigo-600 hover:bg-indigo-50"
+                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                    : "bg-indigo-500 text-white hover:bg-indigo-600"
                 }`}
                 disabled={u._id === user._id}
               >
                 Cambiar Rol
               </button>
+
               <button
                 onClick={() => handleDelete(u._id)}
-                className={`px-2 py-1 text-xs rounded border transition ${
+                className={`px-3 py-1 text-xs font-medium rounded border transition ${
                   u._id === user._id
                     ? "border-gray-300 text-gray-400 cursor-not-allowed"
-                    : "border-red-500 text-red-600 hover:bg-red-50"
+                    : " bg-red-500 text-white rounded hover:bg-red-600 transition"
                 }`}
                 disabled={u._id === user._id}
               >
                 Eliminar
               </button>
             </td>
+
           </tr>
         ))}
-        </tbody>
+      </tbody>
 
-        <tfoot>
-          <tr>
-            <td colSpan="4" className="px-6 py-3 text-right text-sm text-gray-600 bg-gray-50">
-              Total de usuarios: {users.length}
-            </td>
-          </tr>
-        </tfoot>
-      
+      <tfoot>
+        <tr>
+          <td
+            colSpan="4"
+            className="px-6 py-3 text-right text-sm italic text-gray-600 bg-gray-100"
+          >
+            Total de usuarios: {users.length}
+          </td>
+        </tr>
+      </tfoot>
     </table>
   </div>
 );

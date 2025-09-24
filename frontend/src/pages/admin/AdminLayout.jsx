@@ -27,7 +27,7 @@ export default function AdminLayout() {
               onClick={() => setActiveTab(t.id)}
               className={`text-left px-6 py-3 font-medium transition-colors ${
                 t.id === activeTab
-                  ? "bg-gray-700 text-indigo-400"
+                  ? "bg-gray-700 text-indigo-400 border-l-4 border-indigo-500"
                   : "hover:bg-gray-700 hover:text-indigo-300"
               }`}
             >

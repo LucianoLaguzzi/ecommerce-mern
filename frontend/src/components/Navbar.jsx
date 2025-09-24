@@ -78,7 +78,7 @@ export default function Navbar() {
                 </div>
 
                 {openDropdown && (
-                  <div className="absolute right-0 top-full mt-2 w-48 bg-gray-800 rounded-lg shadow-lg border border-gray-700 overflow-hidden z-10">
+                  <div className="absolute right-0 top-full mt-2 w-48 bg-gray-800 rounded-lg shadow-lg border border-gray-700 overflow-hidden z-50">
                     <Link to="/profile" className="block px-4 py-3 text-gray-200 hover:bg-gray-700 transition" onClick={() => setOpenDropdown(false)}>Mi Perfil</Link>
                     <Link to="/myorders" className="block px-4 py-3 text-gray-200 hover:bg-gray-700 transition" onClick={() => setOpenDropdown(false)}>Mis Compras</Link>
                     {/* Panel admin */}
