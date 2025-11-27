@@ -39,23 +39,18 @@ export default function Home() {
         {products.length === 0 ? (
           <p className="text-center text-gray-500 mt-12">No hay productos disponibles</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {products.map((product) => (
-              <Link
-                to={`/product/${product._id}`}
-                key={product._id}
-                className="bg-white border rounded-xl p-5 shadow-md hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex flex-col items-center text-center"
-              >
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-48 object-cover rounded-lg mb-4"
-                />
-                <h3 className="text-lg font-semibold mb-2 text-gray-800">{product.name}</h3>
-                <p className="text-green-600 font-bold mb-2">${formatPrice(product.price)}</p>
-                <span className="text-blue-500 hover:underline font-medium">Ver detalles</span>
-              </Link>
-            ))}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6"> 
+            {products.map((product) => ( 
+              <div key={product._id} className="producto-celda bg-white border rounded-xl p-5 shadow-md hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 flex flex-col items-center text-center" >
+                <img src={product.image} alt={product.name} className="w-full h-48 object-cover rounded-lg mb-4" /> 
+                <h3 className="text-lg font-semibold mb-2 text-gray-800">{product.name}</h3> 
+                <p className="text-green-600 font-bold mb-2">${formatPrice(product.price)}</p> 
+                <Link
+                  to={`/product/${product._id}`}
+                  className="text-blue-500 hover:underline font-medium cursor-pointer">  Ver detalles
+                </Link>
+              </div> 
+            ))} 
           </div>
         )}
 

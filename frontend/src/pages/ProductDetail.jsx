@@ -22,9 +22,16 @@ export default function ProductDetail() {
         setLoading(true);
         const { data } = await axios.get(`http://localhost:5000/api/products/${id}`);
         setProduct(data);
-        setLoading(false);
+        setError(null); // limpia error por si cargó bien
       } catch (err) {
-        setError("No se pudo cargar el producto " + err);
+        if (err.response?.status === 404) {
+          setError("El producto no existe o fue eliminado.");
+        } else if (err.response?.status === 500) {
+          setError("Ocurrió un error en el servidor. Intenta más tarde.");
+        } else {
+          setError("No se pudo cargar el producto. Intenta nuevamente.");
+        }
+      } finally {
         setLoading(false);
       }
     };
@@ -72,18 +79,32 @@ export default function ProductDetail() {
   };
 
   if (loading) return <p className="text-center mt-12 text-gray-500">Cargando producto...</p>;
-  if (error) return <p className="text-center mt-12 text-red-500">{error}</p>;
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-80 text-center">
+        <div className="text-red-600 font-semibold text-xl mb-2">{error}</div>
+        <button
+          onClick={() => (window.location.href = "/")}
+          className="mt-4 px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 transition"
+        >
+          Volver al catálogo
+        </button>
+      </div>
+    );
+  }
   if (!product) return <p className="text-center mt-12 text-gray-500">No se encontró el producto</p>;
 
   return (
     <div className="bg-gray-50 min-h-[93vh]">
       {/* Imagen con zoom */}
       <div
+        data-test="img-zoom"
         className={`relative w-full h-[400px] md:h-[500px] lg:h-[500px] mx-auto overflow-hidden rounded-b-2xl shadow-lg ${zoomActive ? "cursor-zoom-out" : "cursor-zoom-in"}`}
         onMouseMove={handleMouseMove}
         onClick={handleClick}
       >
         <img
+          data-test="product-image"
           src={product.image}
           alt={product.name}
           className="w-full h-full object-contain bg-white shadow-inner rounded-lg transition-transform duration-300"
@@ -102,7 +123,7 @@ export default function ProductDetail() {
 
       {/* Información */}
       <div className="max-w-4xl mx-auto px-6 py-10 space-y-6">
-        <p className="text-4xl font-bold text-green-600">${formatPrice(product.price)}</p>
+        <p data-test="product-price" className="text-4xl font-bold text-green-600">${formatPrice(product.price)}</p>
 
         {product.stock <= 0 ? (
           <p className="text-red-600 font-semibold text-lg">¡Producto sin stock!</p>
@@ -121,7 +142,7 @@ export default function ProductDetail() {
 
         <div className="mt-8">
           <h2 className="text-2xl font-bold mb-3">Descripción</h2>
-          <p className="text-gray-700 leading-relaxed">{product.description}</p>
+          <p data-test="product-description" className="text-gray-700 leading-relaxed">{product.description}</p>
         </div>
 
         {localError && <p className="text-red-500 mt-2 font-medium">{localError}</p>}

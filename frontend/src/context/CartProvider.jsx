@@ -60,7 +60,7 @@ const CartProvider = ({ children }) => {
       return [...prev, { ...product, quantity: qty }];
     });
 
-    toast.success(`Añadiste ${qty} × ${product.name} al carrito`, {
+    toast.success(`Añadiste ${product.name} × ${qty} al carrito`, {
       duration: 3000,
       style: { marginTop: "50px" },
     });

@@ -72,6 +72,7 @@ export default function Login() {
           <div>
             <label className="block text-sm mb-1 text-gray-300">Contraseña</label>
             <input
+              data-cy="password"
               type="password"
               placeholder="********"
               className="w-full bg-gray-700 text-white p-3 rounded-lg focus:ring-2 focus:ring-yellow-400 outline-none"

@@ -128,38 +128,38 @@ function Cart() {
   );
 
   return (
-    <div className="max-w-5xl mx-auto p-6 space-y-6">
-      {cartItems.length === 0 ? (
-        <div className="flex items-center justify-center h-[70vh]">
-          <div className="bg-gray-100 border border-gray-300 px-8 py-10 rounded-xl shadow-lg text-center max-w-sm">
-            <h2 className="text-2xl font-bold mb-4 flex items-center justify-center">
-              {CartIcon} Carrito vacío
-            </h2>
-            <p className="text-gray-600 mb-6">
-              No has agregado productos todavía. ¡Explora nuestra tienda!
-            </p>
-            <Link
-              to="/"
-              className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
-            >
-              Ver productos
-            </Link>
-          </div>
+  <div className="max-w-5xl mx-auto p-6">
+    {cartItems.length === 0 ? (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] -mt-10">
+        <h2 className="text-2xl font-bold mb-6 flex items-center justify-center text-gray-800">
+          {CartIcon} Mis productos
+        </h2>
+        <div className="bg-gray-100 border border-gray-300 px-8 py-10 rounded-xl shadow-lg text-center max-w-sm">
+          <h3 className="text-xl font-semibold mb-4 flex items-center justify-center">
+            {CartIcon} Carrito vacío
+          </h3>
+          <p className="text-gray-600 mb-6">
+            No has agregado productos todavía. ¡Explora nuestra tienda!
+          </p>
+          <Link
+            to="/"
+            className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+          >
+            Ver productos
+          </Link>
         </div>
-      ) : (
+      </div>
+    ) : (
         <>
-          <h2 className="text-2xl font-bold mb-6 flex items-center">
-            {CartIcon} Carrito
-          </h2>
-
+          <h2 className="text-2xl font-bold mb-6 flex items-center">{CartIcon} Mis productos</h2>
           <div className="space-y-4">
             {cartItems.map((item) => {
               const stockNum = Number(item.stock) || 0;
               const maxPermitido = stockNum > 0 ? stockNum : 1;
               const subtotal = item.price * item.quantity;
-
               return (
                 <div
+                  data-test="cart-item"
                   key={item._id}
                   className="bg-white border rounded-xl shadow-md p-5 grid grid-cols-1 sm:grid-cols-5 items-center gap-5 hover:shadow-lg transition-shadow"
                 >
@@ -190,7 +190,7 @@ function Cart() {
                     {item.name}
                   </Link>
 
-                    <p className="text-gray-600 text-sm">Precio: ${formatPrice(item.price)}</p>
+                    <p className="text-gray-600 text-sm" data-test="cart-price">Precio: ${formatPrice(item.price)}</p>
                     {stockNum <= 0 ? (
                       <p className="text-red-500 text-sm">¡Sin stock!</p>
                     ) : item.quantity >= stockNum ? (
@@ -205,47 +205,58 @@ function Cart() {
                   </div>
 
                   {/* CANTIDAD */}
-                  <div className="flex items-center space-x-2 justify-center mt-2 sm:mt-0">
-                    <button
-                      type="button"
-                      onClick={() => decreaseQuantity(item._id)}
-                      disabled={item.quantity === 1}
-                      className={`px-3 py-1 border border-gray-300 text-gray-700 font-semibold transition-colors active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300 ${
-                        item.quantity === 1
-                          ? "bg-gray-100 cursor-not-allowed opacity-50"
-                          : "bg-white hover:bg-gray-200"
-                      }`}
-                    >
-                      -
-                    </button>
+                  
+                  {/* CANTIDAD */}
+                  <div className="flex flex-col items-start sm:items-center">
+                    <p className="text-gray-600 text-sm">
+                      {item.quantity} × ${formatPrice(item.price)}
+                    </p>
+                    <div className="flex items-center space-x-2 mt-1">
+                    
+                      <button
+                        type="button"
+                        onClick={() => decreaseQuantity(item._id)}
+                        disabled={item.quantity === 1}
+                        className={`px-3 py-1 border border-gray-300 text-gray-700 font-semibold transition-colors active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300 ${
+                          item.quantity === 1
+                            ? "bg-gray-100 cursor-not-allowed opacity-50"
+                            : "bg-white hover:bg-gray-200"
+                        }`}
+                      >
+                        -
+                      </button>
 
-                    <input
-                      type="number"
-                      min={1}
-                      max={item.stock || 1}
-                      value={item.quantity}
-                      onChange={(e) => setQuantity(item._id, e.target.value)}
-                      onBlur={(e) => setQuantity(item._id, e.target.value)}
-                      className="w-16 text-center border border-gray-300 rounded px-1 py-1 focus:ring-1 focus:ring-blue-300"
-                    />
+                      <input
+                        type="number"
+                        min={1}
+                        max={item.stock || 1}
+                        value={item.quantity}
+                        onChange={(e) => setQuantity(item._id, e.target.value)}
+                        onBlur={(e) => setQuantity(item._id, e.target.value)}
+                        className="w-16 text-center border border-gray-300 rounded px-1 py-1 focus:ring-1 focus:ring-blue-300"
+                      />
 
-                    <button
-                      type="button"
-                      onClick={() => increaseQuantity(item._id)}
-                      disabled={item.quantity >= maxPermitido || stockNum <= 0}
-                      className={`px-3 py-1 border border-gray-300 text-gray-700 font-semibold transition-colors active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300 ${
-                        item.quantity >= maxPermitido || stockNum <= 0
-                          ? "bg-gray-100 cursor-not-allowed opacity-50"
-                          : "bg-white hover:bg-gray-200"
-                      }`}
-                    >
-                      +
-                    </button>
+                      <button
+                        type="button"
+                        onClick={() => increaseQuantity(item._id)}
+                        disabled={item.quantity >= maxPermitido || stockNum <= 0}
+                        className={`px-3 py-1 border border-gray-300 text-gray-700 font-semibold transition-colors active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300 ${
+                          item.quantity >= maxPermitido || stockNum <= 0
+                            ? "bg-gray-100 cursor-not-allowed opacity-50"
+                            : "bg-white hover:bg-gray-200"
+                        }`}
+                      >
+                        +
+                      </button>
+                    
+                    </div>
                   </div>
 
                   {/* SUBTOTAL + ELIMINAR */}
                   <div className="text-right flex flex-col items-end mt-2 sm:mt-0">
-                    <p className="font-bold text-lg">${formatPrice(subtotal)}</p>
+                    
+                    <p className="font-bold text-lg" data-test="cart-line-total">${formatPrice(subtotal)}</p>
+
                     <button
                       type="button"
                       onClick={() => removeFromCart(item._id)}
@@ -276,7 +287,7 @@ function Cart() {
           {/* RESUMEN DEL TOTAL */}
           <div className="bg-gray-50 border-t border-gray-200 rounded-xl p-6 mt-6 shadow-md">
             <h3 className="text-xl font-bold mb-3">Resumen</h3>
-            <p className="text-lg mb-4">
+            <p className="text-lg mb-4" data-test="cart-total">
               Total: <span className="font-extrabold text-gray-800">${formatPrice(total)}</span>
             </p>
             <button

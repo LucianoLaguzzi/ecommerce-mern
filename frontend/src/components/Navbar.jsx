@@ -49,7 +49,7 @@ export default function Navbar() {
 
           <div className="flex items-center gap-6">
 
-            <Link to="/cart" className="relative group">
+            <Link to="/cart" className="relative group carrito">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6 text-gray-200 group-hover:text-yellow-400 transition">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 2.25h1.5l2.25 12.75h12.75l2.25-9H6.75M6 21a.75.75 0 110-1.5.75.75 0 010 1.5zm12 0a.75.75 0 110-1.5.75.75 0 010 1.5z" />
               </svg>
@@ -72,7 +72,7 @@ export default function Navbar() {
                 <div
                   onClick={() => setOpenDropdown(!openDropdown)}
                   title={user.name}
-                  className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-gray-900 font-bold cursor-pointer hover:bg-yellow-500 transition"
+                  className="avatar w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-gray-900 font-bold cursor-pointer hover:bg-yellow-500 transition"
                 >
                   {user.name.charAt(0).toUpperCase()}
                 </div>

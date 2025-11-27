@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
+import Swal from "sweetalert2";
 
 export default function Register() {
   const { login } = useAuth();
@@ -14,27 +15,47 @@ export default function Register() {
   const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    try {
-      const { data } = await axios.post("http://localhost:5000/api/auth/register", {
-        name, email, password, phone, address
-      });
-      login({
-        token: data.token,
-        _id: data._id,
-        name: data.name,
-        email: data.email,
-        phone: data.phone,
-        address: data.address,
-        createdAt: data.createdAt,
-        isAdmin: data.isAdmin,
-      });
-      navigate("/");
-    } catch (err) {
-      setError(err.response?.data?.message || "Error al registrarse");
-    }
-  };
+  e.preventDefault();
+  setError("");
+  try {
+    const { data } = await axios.post("http://localhost:5000/api/auth/register", {
+      name, email, password, phone, address
+    });
+
+    // Mostrar cartel de éxito
+    Swal.fire({
+  icon: "success",
+  title: "¡Usuario creado con éxito!",
+  text: "Bienvenido a la tienda.",
+  confirmButtonText: "Ir al inicio",
+  customClass: {
+    popup: "rounded-2xl shadow-lg bg-white p-6",
+    title: "text-xl font-semibold text-gray-800",
+    htmlContainer: "text-gray-600 text-base",
+    confirmButton: "bg-green-500 hover:bg-green-600 text-white font-medium px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+  },
+  buttonsStyling: false,
+}).then((res) => {
+      if (res.isConfirmed) {
+        //Logueo automático + redirección
+        login({
+          token: data.token,
+          _id: data._id,
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+          address: data.address,
+          createdAt: data.createdAt,
+          isAdmin: data.isAdmin,
+        });
+        navigate("/");
+      }
+    });
+
+  } catch (err) {
+    setError(err.response?.data?.message || "Error al registrarse");
+  }
+};
 
   return (
     <div className="min-h-[93.9vh] flex items-start justify-center bg-gradient-to-b from-yellow-50 via-orange-100 to-gray-800 px-4 pt-16">
@@ -51,6 +72,7 @@ export default function Register() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
+            data-cy="register-name"
             type="text"
             placeholder="Nombre"
             className="w-full bg-gray-700 text-white p-3 rounded-lg focus:ring-2 focus:ring-yellow-400 outline-none"
@@ -60,6 +82,7 @@ export default function Register() {
             required
           />
           <input
+            data-cy="register-email"
             type="email"
             placeholder="Email"
             className="w-full bg-gray-700 text-white p-3 rounded-lg focus:ring-2 focus:ring-yellow-400 outline-none"
@@ -69,6 +92,7 @@ export default function Register() {
             required
           />
           <input
+            data-cy="register-password"
             type="password"
             placeholder="Contraseña"
             className="w-full bg-gray-700 text-white p-3 rounded-lg focus:ring-2 focus:ring-yellow-400 outline-none"
@@ -78,6 +102,7 @@ export default function Register() {
             required
           />
           <input
+            data-cy="register-phone"
             type="text"
             placeholder="Teléfono"
             className="w-full bg-gray-700 text-white p-3 rounded-lg focus:ring-2 focus:ring-yellow-400 outline-none"
@@ -85,6 +110,7 @@ export default function Register() {
             onChange={(e) => setPhone(e.target.value)}
           />
           <input
+            data-cy="register-address"
             type="text"
             placeholder="Dirección"
             className="w-full bg-gray-700 text-white p-3 rounded-lg focus:ring-2 focus:ring-yellow-400 outline-none"

@@ -1,0 +1,14 @@
+# Node
+node_modules/
+npm-debug.log*
+
+# Entornos
+.env
+cypress.env.json
+
+# Compilados / build
+dist/
+dist-ssr/
+
+# Otros
+.DS_Store

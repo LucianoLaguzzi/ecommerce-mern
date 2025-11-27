@@ -1,6 +1,7 @@
 import Product from '../models/Product.js'
 import asyncHandler from 'express-async-handler'
 import cloudinary from '../config/cloudinary.js'
+import mongoose from "mongoose";
 
 // helper para subir a Cloudinary con buffer (stream)
 const streamUpload = (buffer, folder = "ecommerce") => {
@@ -47,13 +48,22 @@ const getProducts = asyncHandler(async (req, res) => {
 
 // GET /api/products/:id (público)
 const getProductById = asyncHandler(async (req, res) => {
-  const product = await Product.findById(req.params.id)
-  if (product) res.json(product)
-  else {
-    res.status(404)
-    throw new Error('Producto no encontrado')
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    console.warn(`ID inválido recibido: ${id}`); // logeo más limpio
+    return res.status(404).json({ message: "Producto no encontrado" });
   }
-})
+
+  const product = await Product.findById(id);
+
+  if (!product) {
+    console.warn(`Producto no encontrado: ${id}`);
+    return res.status(404).json({ message: "Producto no encontrado" });
+  }
+
+  res.json(product);
+});
 
 // POST /api/products (admin)
 const createProduct = asyncHandler(async (req, res) => {

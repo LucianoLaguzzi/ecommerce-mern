@@ -68,6 +68,7 @@ export default function AdminOrders() {
                   <div className="flex items-center gap-2">
                     <span>#Orden</span>
                     <button
+                      data-test = "cy-filtrar"
                       type="button"
                       onClick={() => setOrderFilterActive(true)}
                       className="text-gray-600 hover:text-gray-900"
@@ -92,6 +93,7 @@ export default function AdminOrders() {
                   </div>
                 ) : (
                   <input
+                    data-test="input-filtro"
                     ref={orderFilterInputRef}
                     type="text"
                     placeholder="Filtrar orden..."
@@ -114,15 +116,15 @@ export default function AdminOrders() {
             </tr>
           </thead>
 
-          <tbody>
+          <tbody data-test="tabla-orders">
             {filteredOrders.map((order) => (
               <tr key={order._id} className="border-t hover:bg-gray-50">
-                <td className="px-6 py-3">
+                <td data-test="cy-order-n" className="px-6 py-3">
                   {order._id.slice(-6).toUpperCase()}
                 </td>
-                <td className="px-6 py-3">{order.user?.name || order.user?.email}</td>
-                <td className="px-6 py-3">${formatPrice(order.total)}</td>
-                <td className="px-6 py-3 capitalize">
+                <td data-test="cy-order-name" className="px-6 py-3">{order.user?.name || order.user?.email}</td>
+                <td data-test="cy-order-total" className="px-6 py-3">${formatPrice(order.total)}</td>
+                <td data-test="cy-order-status" className="px-6 py-3 capitalize">
                   <select
                     value={order.status}
                     onChange={async (e) => {
@@ -162,10 +164,10 @@ export default function AdminOrders() {
                   </select>
                 </td>
 
-                <td className="px-6 py-3">
+                <td data-test="cy-order-date" className="px-6 py-3">
                   {new Date(order.createdAt).toLocaleString("es-AR")}
                 </td>
-                <td className="px-6 py-3">
+                <td data-test="cy-order-goto" className="px-6 py-3">
                   <Link to={`/orders/${order._id}`} className="text-yellow-500 hover:underline">
                     Ver
                   </Link>

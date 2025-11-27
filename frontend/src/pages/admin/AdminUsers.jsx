@@ -122,13 +122,13 @@ export default function AdminUsers() {
         </tr>
       </thead>
       
-      <tbody>
+      <tbody data-test="tabla-users">
         {users.map((u, i) => (
           <tr className={`${i % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-indigo-50 transition-colors`}>
-            <td className="px-6 py-4 text-gray-800">{u.name}</td>
-            <td className="px-6 py-4 text-gray-600">{u.email}</td>
+            <td data-test="cy-name" className="px-6 py-4 text-gray-800">{u.name}</td>
+            <td data-test="cy-email" className="px-6 py-4 text-gray-600">{u.email}</td>
             
-            <td className="px-6 py-4 text-center">
+            <td data-test="user-rol" className="px-6 py-4 text-center">
               {u.isAdmin ? (
                 <span className="inline-block px-4 py-1 text-xs font-semibold text-indigo-700 bg-gradient-to-r from-indigo-100 to-indigo-200 rounded-full shadow-sm border border-indigo-200">
                   Admin
@@ -142,6 +142,7 @@ export default function AdminUsers() {
 
             <td className="px-6 py-4 text-center space-x-2">
               <button
+                data-test="btn-cambia-rol"
                 onClick={() => handleToggleAdmin(u._id, u.isAdmin)}
                 className={`px-3 py-1 text-xs font-medium rounded transition ${
                   u._id === user._id
@@ -154,6 +155,7 @@ export default function AdminUsers() {
               </button>
 
               <button
+                data-test="btn-eliminar"
                 onClick={() => handleDelete(u._id)}
                 className={`px-3 py-1 text-xs font-medium rounded border transition ${
                   u._id === user._id

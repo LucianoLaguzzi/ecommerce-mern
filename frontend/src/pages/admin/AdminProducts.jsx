@@ -191,235 +191,237 @@ export default function AdminProducts() {
       </h2>
 
       {/* Formulario */}
-<form
-  onSubmit={handleSubmit}
-  className="bg-white p-8 rounded-2xl shadow-md mb-10 space-y-4 max-w-xl mx-auto flex flex-col items-center border border-gray-200 hover:shadow-lg transition-shadow"
-  encType="multipart/form-data"
->
-  <h3 className="text-lg font-semibold text-gray-800 mb-4">
-    {editingProduct ? "Editar producto" : "Agregar nuevo producto"}
-  </h3>
-
-  {/* Nombre */}
-  <div className="w-full">
-    {editingProduct && <label className="text-xs text-gray-500">Nombre</label>}
-    <input
-      type="text"
-      name="name"
-      placeholder="Nombre"
-      value={newProduct.name}
-      onChange={handleChange}
-      className="w-full border px-3 py-2 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-      required
-    />
-  </div>
-
-  {/* Descripción */}
-  <div className="w-full">
-    {editingProduct && <label className="text-xs text-gray-500">Descripción</label>}
-    <input
-      type="text"
-      name="description"
-      placeholder="Descripción"
-      value={newProduct.description}
-      onChange={handleChange}
-      className="w-full border px-3 py-2 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-      required
-    />
-  </div>
-
-  {/* Precio */}
-  <div className="w-full">
-    {editingProduct && <label className="text-xs text-gray-500">Precio</label>}
-    <div className="flex items-center border px-3 py-2 rounded-lg focus-within:ring-2 focus-within:ring-indigo-500">
-      <span className="text-gray-500 mr-1">$</span>
-      <input
-        type="number"
-        name="price"
-        placeholder="Precio"
-        value={newProduct.price}
-        onChange={handleChange}
-        className="w-full focus:outline-none"
-        required
-        min="0"
-      />
-    </div>
-  </div>
-
-  {/* Stock */}
-  <div className="w-full">
-    {editingProduct && <label className="text-xs text-gray-500">Stock</label>}
-    <input
-      type="number"
-      name="stock"
-      placeholder="Stock"
-      value={newProduct.stock}
-      onChange={handleChange}
-      className="w-full border px-3 py-2 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-      required
-    />
-  </div>
-
-  {/* Imagen */}
-  <div className="w-full">
-    {editingProduct && <label className="text-xs text-gray-500">Imagen</label>}
-    <input
-      ref={fileInputRef}
-      type="file"
-      name="image"
-      accept="image/*"
-      onChange={handleChange}
-      className="w-full border px-3 py-2 rounded-lg"
-    />
-  </div>
-
-  {/* Preview */}
-  {newProduct.preview && (
-    <div className="mt-3 flex items-center gap-3 bg-gray-50 p-2 rounded-lg border">
-      <img
-        src={newProduct.preview}
-        alt="Preview"
-        className="h-16 w-16 object-cover rounded-lg shadow"
-      />
-      <span className="text-sm text-gray-600">Vista previa</span>
-    </div>
-  )}
-
-  {/* Botones */}
-  <div className="flex justify-center gap-3 pt-3">
-    <button
-      type="submit"
-      className="bg-indigo-600 text-white px-6 py-2 rounded-lg shadow hover:bg-indigo-700 hover:shadow-md transition-all"
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white p-8 rounded-2xl shadow-md mb-10 space-y-4 max-w-xl mx-auto flex flex-col items-center border border-gray-200 hover:shadow-lg transition-shadow"
+      encType="multipart/form-data"
     >
-      {editingProduct ? "Actualizar Producto" : "Crear Producto"}
-    </button>
-    {editingProduct && (
-      <button
-        type="button"
-        className="bg-gray-400 text-white px-6 py-2 rounded-lg hover:bg-gray-500 transition"
-        onClick={resetForm}
-      >
-        Cancelar
-      </button>
-    )}
-  </div>
-</form>
+      <h3 className="text-lg font-semibold text-gray-800 mb-4">
+        {editingProduct ? "Editar producto" : "Agregar nuevo producto"}
+      </h3>
 
+      {/* Nombre */}
+      <div className="w-full">
+        {editingProduct && <label className="text-xs text-gray-500">Nombre</label>}
+        <input
+          type="text"
+          name="name"
+          placeholder="Nombre"
+          value={newProduct.name}
+          onChange={handleChange}
+          className="w-full border px-3 py-2 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+          required
+        />
+      </div>
 
-      {/* Tabla */}
-      <div className="border rounded-xl shadow-md overflow-hidden">
-        <div className="max-h-96 overflow-y-auto">
-          <table className="min-w-full text-sm border-collapse table-fixed">
-            <thead className="sticky top-0 z-10 bg-gray-100 shadow-sm">
-              <tr>
-                <th className="w-[12%] px-4 py-2 font-semibold text-gray-700 border-b text-center">
-                  Imagen
-                </th>
-                <th className="w-[33%] px-4 py-2 font-semibold text-gray-700 border-b text-left">
-                  {!nameFilterActive ? (
-                    <div className="flex items-center gap-2">
-                      <span>Nombre</span>
-                      <button
-                        type="button"
-                        onClick={() => setNameFilterActive(true)}
-                        className="text-gray-600 hover:text-gray-900"
-                        aria-label="Filtrar por nombre"
-                        title="Filtrar por nombre"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-4 w-4"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  ) : (
-                    <input
-                      ref={nameFilterInputRef}
-                      type="text"
-                      placeholder="Filtrar nombre..."
-                      value={filter}
-                      onChange={(e) => setFilter(e.target.value)}
-                      onKeyDown={(e) =>
-                        e.key === "Escape" && setNameFilterActive(false)
-                      }
-                      onBlur={() => setNameFilterActive(false)}
-                      className="bg-white border border-gray-300 rounded px-2 py-1 text-sm w-full max-w-[180px] focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                    />
-                  )}
-                </th>
-                <th className="w-[15%] px-4 py-2 font-semibold text-gray-700 border-b text-center">
-                  Precio
-                </th>
-                <th className="w-[15%] px-4 py-2 font-semibold text-gray-700 border-b text-center">
-                  Stock
-                </th>
-                <th className="w-[25%] px-4 py-2 font-semibold text-gray-700 border-b text-center">
-                  Acciones
-                </th>
-              </tr>
-            </thead>
+      {/* Descripción */}
+      <div className="w-full">
+        {editingProduct && <label className="text-xs text-gray-500">Descripción</label>}
+        <input
+          type="text"
+          name="description"
+          placeholder="Descripción"
+          value={newProduct.description}
+          onChange={handleChange}
+          className="w-full border px-3 py-2 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+          required
+        />
+      </div>
 
-            <tbody className="divide-y divide-gray-200">
-              {filteredProducts.length > 0 ? (
-                filteredProducts.map((p) => (
-                  <tr
-                    key={p._id}
-                    className="hover:bg-indigo-50 transition even:bg-gray-50"
-                  >
-                    <td className="px-4 py-3 text-center">
-                      {p.image && (
-                        <img
-                          src={p.image}
-                          alt={p.name}
-                          className="h-12 w-12 object-cover rounded-lg shadow-sm mx-auto"
-                        />
-                      )}
-                    </td>
-                    <td className="px-4 py-3 font-medium truncate">{p.name}</td>
-                    <td className="px-4 py-3 text-center">${formatPrice(p.price)}</td>
-                    <td className="px-4 py-3 text-center">{p.stock}</td>
-                    <td className="px-4 py-3">
-                      <div className="flex gap-2 justify-center">
-                        <button
-                          onClick={() => handleEdit(p)}
-                          className="px-3 py-1 text-xs font-medium bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-                        >
-                          Editar
-                        </button>
-                        <button
-                          onClick={() => handleDelete(p._id)}
-                          className="px-3 py-1 text-xs font-medium bg-red-500 text-white rounded hover:bg-red-600 transition"
-                        >
-                          Eliminar
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td
-                    colSpan={5}
-                    className="px-6 py-6 text-center text-gray-500 bg-white"
-                  >
-                    No se encontraron productos
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+      {/* Precio */}
+      <div className="w-full">
+        {editingProduct && <label className="text-xs text-gray-500">Precio</label>}
+        <div className="flex items-center border px-3 py-2 rounded-lg focus-within:ring-2 focus-within:ring-indigo-500">
+          <span className="text-gray-500 mr-1">$</span>
+          <input
+            type="number"
+            name="price"
+            placeholder="Precio"
+            value={newProduct.price}
+            onChange={handleChange}
+            className="w-full focus:outline-none"
+            required
+            min="0"
+            step="0.01"
+          />
         </div>
       </div>
+
+      {/* Stock */}
+      <div className="w-full">
+        {editingProduct && <label className="text-xs text-gray-500">Stock</label>}
+        <input
+          type="number"
+          name="stock"
+          placeholder="Stock"
+          value={newProduct.stock}
+          onChange={handleChange}
+          className="w-full border px-3 py-2 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+          required
+        />
+      </div>
+
+      {/* Imagen */}
+      <div className="w-full">
+        {editingProduct && <label className="text-xs text-gray-500">Imagen</label>}
+        <input
+          ref={fileInputRef}
+          type="file"
+          name="image"
+          accept="image/*"
+          onChange={handleChange}
+          className="w-full border px-3 py-2 rounded-lg"
+          required
+        />
+      </div>
+
+      {/* Preview */}
+      {newProduct.preview && (
+        <div className="mt-3 flex items-center gap-3 bg-gray-50 p-2 rounded-lg border">
+          <img
+            src={newProduct.preview}
+            alt="Preview"
+            className="h-16 w-16 object-cover rounded-lg shadow"
+          />
+          <span className="text-sm text-gray-600">Vista previa</span>
+        </div>
+      )}
+
+      {/* Botones */}
+      <div className="flex justify-center gap-3 pt-3">
+        <button
+          type="submit"
+          className="bg-indigo-600 text-white px-6 py-2 rounded-lg shadow hover:bg-indigo-700 hover:shadow-md transition-all"
+        >
+          {editingProduct ? "Actualizar Producto" : "Crear Producto"}
+        </button>
+        {editingProduct && (
+          <button
+            type="button"
+            className="bg-gray-400 text-white px-6 py-2 rounded-lg hover:bg-gray-500 transition"
+            onClick={resetForm}
+          >
+            Cancelar
+          </button>
+        )}
+      </div>
+    </form>
+
+
+    {/* Tabla */}
+    <div className="border rounded-xl shadow-md overflow-hidden">
+      <div className="max-h-96 overflow-y-auto">
+        <table className="min-w-full text-sm border-collapse table-fixed">
+          <thead className="sticky top-0 z-10 bg-gray-100 shadow-sm">
+            <tr>
+              <th className="w-[12%] px-4 py-2 font-semibold text-gray-700 border-b text-center">
+                Imagen
+              </th>
+              <th className="w-[33%] px-4 py-2 font-semibold text-gray-700 border-b text-left">
+                {!nameFilterActive ? (
+                  <div className="flex items-center gap-2">
+                    <span>Nombre</span>
+                    <button
+                      type="button"
+                      onClick={() => setNameFilterActive(true)}
+                      className="text-gray-600 hover:text-gray-900"
+                      aria-label="Filtrar por nombre"
+                      title="Filtrar por nombre"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                ) : (
+                  <input
+                    ref={nameFilterInputRef}
+                    type="text"
+                    placeholder="Filtrar nombre..."
+                    value={filter}
+                    onChange={(e) => setFilter(e.target.value)}
+                    onKeyDown={(e) =>
+                      e.key === "Escape" && setNameFilterActive(false)
+                    }
+                    onBlur={() => setNameFilterActive(false)}
+                    className="bg-white border border-gray-300 rounded px-2 py-1 text-sm w-full max-w-[180px] focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  />
+                )}
+              </th>
+              <th className="w-[15%] px-4 py-2 font-semibold text-gray-700 border-b text-center">
+                Precio
+              </th>
+              <th className="w-[15%] px-4 py-2 font-semibold text-gray-700 border-b text-center">
+                Stock
+              </th>
+              <th className="w-[25%] px-4 py-2 font-semibold text-gray-700 border-b text-center">
+                Acciones
+              </th>
+            </tr>
+          </thead>
+
+          <tbody data-test="tabla-products" className="divide-y divide-gray-200">
+            {filteredProducts.length > 0 ? (
+              filteredProducts.map((p) => (
+                <tr
+                  key={p._id}
+                  className="hover:bg-indigo-50 transition even:bg-gray-50"
+                >
+                  <td className="px-4 py-3 text-center" data-test="cy-image">
+                    {p.image && (
+                      <img
+                        src={p.image}
+                        alt={p.name}
+                        className="h-12 w-12 object-cover rounded-lg shadow-sm mx-auto"
+                      />
+                    )}
+                  </td>
+                  <td className="px-4 py-3 font-medium truncate" data-test="cy-name">{p.name}</td>
+                  <td className="px-4 py-3 text-center" data-test="cy-price">${formatPrice(p.price)}</td>
+                  <td className="px-4 py-3 text-center" data-test="cy-stock">{p.stock}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex gap-2 justify-center">
+                      <button
+                        onClick={() => handleEdit(p)}
+                        className="px-3 py-1 text-xs font-medium bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                      >
+                        Editar
+                      </button>
+                      <button
+                        onClick={() => handleDelete(p._id)}
+                        className="px-3 py-1 text-xs font-medium bg-red-500 text-white rounded hover:bg-red-600 transition"
+                      >
+                        Eliminar
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan={5}
+                  className="px-6 py-6 text-center text-gray-500 bg-white"
+                >
+                  No se encontraron productos
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
 
 
 
