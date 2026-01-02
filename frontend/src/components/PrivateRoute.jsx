@@ -9,5 +9,7 @@ export default function PrivateRoute({ children }) {
     return <p>Cargando sesión...</p>; // poner un spinner
   }
 
-  return token ? children : <Navigate to="/login" />;
+  if (!token) return null;
+  return children;
+
 }

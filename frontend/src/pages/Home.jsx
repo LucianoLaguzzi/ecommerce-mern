@@ -63,7 +63,7 @@ export default function Home() {
           >
             Anterior
           </button>
-          <span className="px-3 py-2 font-semibold text-gray-700">{page} / {totalPages}</span>
+          <span  data-test="pagination-indicator" className="px-3 py-2 font-semibold text-gray-700">{page} / {totalPages}</span>
           <button
             disabled={page >= totalPages}
             onClick={() => setPage(page + 1)}

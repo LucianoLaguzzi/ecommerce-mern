@@ -46,11 +46,11 @@ export default function Profile() {
         
         {/* Avatar + Nombre */}
         <div className="flex flex-col items-center">
-          <div className="w-24 h-24 rounded-full bg-yellow-400 flex items-center justify-center text-gray-900 text-3xl font-bold shadow-md">
+          <div data-test="profile-avatar" className="w-24 h-24 rounded-full bg-yellow-400 flex items-center justify-center text-gray-900 text-3xl font-bold shadow-md">
             {user.name?.charAt(0).toUpperCase()}
           </div>
-          <h1 className="mt-4 text-2xl font-bold">{user.name}</h1>
-          <p className="text-gray-500">{user.email}</p>
+          <h1 data-test="profile-name" className="mt-4 text-2xl font-bold">{user.name}</h1>
+          <p data-test="profile-email" className="text-gray-500">{user.email}</p>
         </div>
 
         {!editing ? (
@@ -66,7 +66,7 @@ export default function Profile() {
                   </svg>
                   <div>
                     <p className="text-sm text-gray-500">Teléfono</p>
-                    <p className="font-semibold">{user.phone}</p>
+                    <p data-test="profile-phone" className="font-semibold">{user.phone}</p>
                   </div>
                 </div>
               )}
@@ -85,7 +85,7 @@ export default function Profile() {
                   </svg>
                   <div>
                     <p className="text-sm text-gray-500">Dirección</p>
-                    <p className="font-semibold">{user.address}</p>
+                    <p data-test="profile-address" className="font-semibold">{user.address}</p>
                   </div>
                 </div>
               )}
@@ -98,7 +98,7 @@ export default function Profile() {
                   </svg>
                   <div>
                     <p className="text-sm text-gray-500">Registrado</p>
-                    <p className="font-semibold">{new Date(user.createdAt).toLocaleDateString()}</p>
+                    <p data-test="profile-registered" className="font-semibold">{new Date(user.createdAt).toLocaleDateString()}</p>
                   </div>
                 </div>
               )}
@@ -122,6 +122,7 @@ export default function Profile() {
                   type={field === "email" ? "email" : "text"}
                   name={field}
                   value={formData[field]}
+                  required={["name", "email"].includes(field)}
                   onChange={handleChange}
                   className="w-full bg-gray-100 border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-yellow-400 outline-none"
                 />
@@ -130,12 +131,14 @@ export default function Profile() {
 
             <div className="flex gap-2">
               <button
+               data-test="profile-save"
                 type="submit"
                 className="flex-1 bg-yellow-400 text-gray-900 py-3 rounded-lg hover:bg-yellow-500 transition"
               >
                 Guardar
               </button>
               <button
+                data-test="profile-cancel"
                 type="button"
                 onClick={() => {
                   setFormData({

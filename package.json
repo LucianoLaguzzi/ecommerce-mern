@@ -3,7 +3,20 @@
     "@tailwindcss/postcss": "^4.1.11",
     "autoprefixer": "^10.4.21",
     "cypress": "^15.3.0",
+    "marge": "^1.0.1",
+    "mochawesome": "^7.1.4",
+    "mochawesome-merge": "^4.4.1",
+    "mochawesome-report-generator": "^6.3.2",
     "postcss": "^8.5.6",
+    "rimraf": "^6.1.2",
     "tailwindcss": "^4.1.11"
+  },
+  "scripts": {
+    "cypress:run": "npx cypress run",
+    "report:merge": "npx mochawesome-merge cypress/reports/json/*.json > cypress/reports/report.json",
+    "report:generate": "npx marge cypress/reports/report.json --reportDir cypress/reports/html --reportFilename report --inline",
+    "report:clean": "npx rimraf cypress/reports/json",
+    "report": "npm run cypress:run & npm run report:merge & npm run report:generate & npm run report:clean"
   }
 }
+

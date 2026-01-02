@@ -13,6 +13,8 @@ import AdminLayout from "./pages/Admin/AdminLayout";
 import AdminRoute from "./components/AdminRoute";
 import AccessDenied from "./pages/AccessDenied";
 import NotFound from "./pages/NotFound";
+import ForgotPassword from "./pages/ForgotPassword";
+
 
 import { Toaster } from "react-hot-toast";
 
@@ -62,6 +64,9 @@ function App() {
 
           <Route path="/forbidden" element={<AccessDenied />} />
           <Route path="*" element={<NotFound />} />
+
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+
 
         </Routes>
 

@@ -3,6 +3,7 @@ import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 import { formatPrice } from "../../utils/formatPrice";
+import axios from "axios";
 
 export default function AdminProducts() {
   const { token } = useAuth();
@@ -28,23 +29,24 @@ export default function AdminProducts() {
   const nameFilterInputRef = useRef(null);
 
   const fetchTableProducts = async (pageNumber = 1) => {
-    try {
-      setLoading(true);
-      const res = await fetch(
-        `http://localhost:5000/api/products?page=${pageNumber}&limit=6`
-      );
-      if (!res.ok) throw new Error("Error al cargar productos");
-      const data = await res.json();
-      setProducts(data.products);
-      setPage(data.page);
-      setTotalPages(data.totalPages);
-    } catch (err) {
-      console.error(err);
-      toast.error("No se pudieron cargar los productos");
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    setLoading(true);
+
+    const { data } = await axios.get(
+      `http://localhost:5000/api/products?page=${pageNumber}&limit=6`
+    );
+
+    setProducts(data.products);
+    setPage(data.page);
+    setTotalPages(data.totalPages);
+  } catch (err) {
+    console.error(err);
+    toast.error("No se pudieron cargar los productos");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     fetchTableProducts(page);
@@ -86,58 +88,63 @@ export default function AdminProducts() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    formData.append("name", newProduct.name);
-    formData.append("description", newProduct.description);
-    formData.append("price", newProduct.price);
-    formData.append("stock", newProduct.stock);
-    if (newProduct.image) formData.append("image", newProduct.image);
+  e.preventDefault();
 
-    try {
-      let res;
-      if (editingProduct) {
-        res = await fetch(
-          `http://localhost:5000/api/products/${editingProduct._id}`,
-          {
-            method: "PUT",
-            headers: { Authorization: `Bearer ${token}` },
-            body: formData,
-          }
-        );
-      } else {
-        res = await fetch("http://localhost:5000/api/products", {
-          method: "POST",
+  const formData = new FormData();
+  formData.append("name", newProduct.name);
+  formData.append("description", newProduct.description);
+  formData.append("price", newProduct.price);
+  formData.append("stock", newProduct.stock);
+
+  if (newProduct.image instanceof File) {
+    formData.append("image", newProduct.image);
+  }
+
+  try {
+    let res;
+
+    if (editingProduct) {
+      res = await axios.put(
+        `http://localhost:5000/api/products/${editingProduct._id}`,
+        formData,
+        {
           headers: { Authorization: `Bearer ${token}` },
-          body: formData,
-        });
-      }
-
-      if (!res.ok)
-        throw new Error(editingProduct ? "Error al actualizar" : "Error al crear");
-
-      const savedProduct = await res.json();
-
-      if (editingProduct) {
-        setProducts((prev) =>
-          prev.map((p) => (p._id === savedProduct._id ? savedProduct : p))
-        );
-        toast.success("Producto actualizado");
-      } else {
-        setProducts((prev) => [savedProduct, ...prev]);
-        toast.success("Producto creado");
-      }
-
-      resetForm();
-    } catch (err) {
-      console.error(err);
-      toast.error(
-        editingProduct
-          ? "No se pudo actualizar el producto"
-          : "No se pudo crear el producto"
+        }
+      );
+    } else {
+      res = await axios.post(
+        "http://localhost:5000/api/products",
+        formData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
     }
-  };
+
+    const savedProduct = res.data;
+
+    if (editingProduct) {
+      setProducts((prev) =>
+        prev.map((p) =>
+          p._id === savedProduct._id ? savedProduct : p
+        )
+      );
+      toast.success("Producto actualizado");
+    } else {
+      setProducts((prev) => [savedProduct, ...prev]);
+      toast.success("Producto creado");
+    }
+
+    resetForm();
+  } catch (err) {
+    console.error(err);
+    toast.error(
+      editingProduct
+        ? "No se pudo actualizar el producto"
+        : "No se pudo crear el producto"
+    );
+  }
+};
 
   const handleEdit = (product) => {
     setEditingProduct(product);
@@ -146,37 +153,39 @@ export default function AdminProducts() {
       description: product.description,
       price: product.price,
       stock: product.stock,
-      image: null,
+      image: product.image || null,
       preview: product.image || null,
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleDelete = async (id) => {
-    const confirm = await Swal.fire({
-      title: "¿Eliminar producto?",
-      text: "No podrás revertir esto",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "Cancelar",
-    });
-    if (confirm.isConfirmed) {
-      try {
-        const res = await fetch(`http://localhost:5000/api/products/${id}`, {
-          method: "DELETE",
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!res.ok) throw new Error("Error al eliminar");
+  const confirm = await Swal.fire({
+    title: "¿Eliminar producto?",
+    text: "No podrás revertir esto",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Sí, eliminar",
+    cancelButtonText: "Cancelar",
+  });
 
-        setProducts((prev) => prev.filter((p) => p._id !== id));
-        toast.success("Producto eliminado");
-      } catch (err) {
-        console.error(err);
-        toast.error("No se pudo eliminar el producto");
+  if (!confirm.isConfirmed) return;
+
+  try {
+    await axios.delete(
+      `http://localhost:5000/api/products/${id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
       }
-    }
-  };
+    );
+
+    setProducts((prev) => prev.filter((p) => p._id !== id));
+    toast.success("Producto eliminado");
+  } catch (err) {
+    console.error(err);
+    toast.error("No se pudo eliminar el producto");
+  }
+};
 
   const filteredProducts = products.filter((p) =>
     p.name.toLowerCase().includes(filter.toLowerCase())
@@ -271,7 +280,7 @@ export default function AdminProducts() {
           accept="image/*"
           onChange={handleChange}
           className="w-full border px-3 py-2 rounded-lg"
-          required
+           required={!editingProduct}
         />
       </div>
 

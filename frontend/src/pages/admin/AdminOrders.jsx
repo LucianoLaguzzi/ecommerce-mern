@@ -167,8 +167,8 @@ export default function AdminOrders() {
                 <td data-test="cy-order-date" className="px-6 py-3">
                   {new Date(order.createdAt).toLocaleString("es-AR")}
                 </td>
-                <td data-test="cy-order-goto" className="px-6 py-3">
-                  <Link to={`/orders/${order._id}`} className="text-yellow-500 hover:underline">
+                <td className="px-6 py-3">
+                  <Link data-test="cy-order-goto" to={`/orders/${order._id}`} className="text-yellow-500 hover:underline">
                     Ver
                   </Link>
                 </td>

@@ -57,3 +57,20 @@ export const loginUser = async (req, res) => {
     res.status(401).json({ message: 'Credenciales inválidas' })
   }
 }
+
+
+export const forgotPassword = async (req, res) => {
+  const { email, password } = req.body;
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    res.status(404);
+    throw new Error("Usuario no encontrado");
+  }
+
+  user.password = password;
+  await user.save();
+
+  res.json({ message: "Contraseña actualizada" });
+};

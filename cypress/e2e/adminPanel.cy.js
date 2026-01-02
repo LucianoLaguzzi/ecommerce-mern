@@ -214,6 +214,10 @@ describe("Verificar funcionamiento de panel admin productos",() =>{
         cy.get('input[name="price"]').click().type("650000")
         cy.get('input[name="stock"]').click().type("15")
 
+        // Simula la carga de la imagen desde el archivo en la carpeta /fixtures raiz 
+        cy.get('input[name="image"]').selectFile('cypress/fixtures/celular.jpg', { force: true });
+
+ 
         cy.contains("Crear Producto").click();
 
         cy.wait("@mockNewProduct")
@@ -271,7 +275,7 @@ describe("Verificar funcionamiento de panel admin productos",() =>{
     it("Elimina un producto", () => {
 
         // intercept DELETE
-         cy.intercept("DELETE", "http://localhost:5000/api/products/*", {
+        cy.intercept("DELETE", "http://localhost:5000/api/products/*", {
             statusCode: 200, //o puede no ir (por default es 200)
             body: {
              message: 'Producto eliminado' 
@@ -333,7 +337,7 @@ describe("Verificar funcionamiento de panel admin productos",() =>{
 
 describe("Verificar funcionamiento de panel admin ordenes",() =>{
     beforeEach(()=>{
-         cy.intercept("GET", "http://localhost:5000/api/orders", {
+        cy.intercept("GET", "http://localhost:5000/api/orders", {
             statusCode: 200,
             body: [
                 {
@@ -348,17 +352,17 @@ describe("Verificar funcionamiento de panel admin ordenes",() =>{
                         productId: "prodA1",
                         name: "Producto Demo A",
                         quantity: 2,
-                        price: 4500
+                        price: 2500
                     },
                     {
                         productId: "prodB2",
                         name: "Producto Demo B",
                         quantity: 1,
-                        price: 9999
+                        price: 10000
                     }
                     
                 ],
-                total: 10500,
+                total: 15000,
                 status: "Pendiente",
                 createdAt: "2025-10-28T12:00:00.000Z",
                 updatedAt: "2025-10-28T12:00:00.000Z"
@@ -367,19 +371,14 @@ describe("Verificar funcionamiento de panel admin ordenes",() =>{
         }).as("mockOrders");
 
 
-        cy.intercept(
-            "PATCH",
-            "http://localhost:5000/api/orders/*",
-            {
-                statusCode: 200,
-                body: {   
-                    _id: "order123",
-                    status: "Completada" 
-                }
-                
+        cy.intercept("PATCH", "http://localhost:5000/api/orders/*", {
+            statusCode: 200,
+            body: {   
+                _id: "order123",
+                status: "Completada" 
             }
-        ).as("updateOrder");
-
+                
+        }).as("updateOrder");
     
 
         cy.visit("/");
@@ -390,25 +389,19 @@ describe("Verificar funcionamiento de panel admin ordenes",() =>{
     })
 
 
-    it.only("Verificar vista panel ordenes",()=>{
+    it("Verifica filtro de ordenes",()=>{
         cy.wait("@mockOrders")
 
         cy.get('[data-test="tabla-orders"]').should("be.visible")
 
-        cy.get('[data-test="tabla-orders"] tr').eq(0).within(() =>{
-            cy.get('[data-test="cy-order-n"]')
-        }) 
-
         cy.get('[data-test= "cy-filtrar"]').should("be.visible").click();
         cy.get('[data-test= "input-filtro"]').should("be.visible").click().type("DER")
         
-
         cy.get('[data-test="tabla-orders"] tr').eq(0).within(() =>{
             cy.get('[data-test="cy-order-n"]').should("contain", "DER123")
         }) 
 
-
-        cy.get('[data-test= "input-filtro"]').should("be.visible").clear().type("AA00")
+        cy.get('[data-test="input-filtro"]').should("be.visible").clear().type("AA00")
 
         cy.get('[data-test="tabla-orders"] tr').eq(0).within(() =>{
             cy.contains("No se encontraron órdenes").should("be.visible")
@@ -416,13 +409,88 @@ describe("Verificar funcionamiento de panel admin ordenes",() =>{
 
         cy.get('[data-test= "input-filtro"]').should("be.visible").clear()
 
-        cy.get('[data-test="cy-order-status"] select').select("Completada");
+    })
+
+
+    it("Verificar vista panel ordenes",()=>{
+        cy.wait("@mockOrders")
+
+        cy.get('[data-test="tabla-orders"]').should("be.visible")
+
+
+        //Obtener la primer fila con el alias "row"
+        cy.get('[data-test="tabla-orders"] tr').eq(0).as("row");
+
+        // obtengo el row que guarde, verifico estado Pendiente antes de cambiarlo
+        cy.get("@row").find('[data-test="cy-order-status"] select').should("have.value", "Pendiente");
+
+        // cambiar a Completada
+        cy.get("@row").find('[data-test="cy-order-status"] select').select("Completada");
+
+        // esperar patch
         cy.wait("@updateOrder");
 
-        cy.contains("Pendiente").should("be.visible");
+        // dejar que React renderice
+        cy.wait(0);
+
+        // verificar nuevo valor
+        cy.get("@row").find('[data-test="cy-order-status"] select').should("have.value", "Completada");
+
+    })
 
 
+   
+    it("Verificar el orden de detalle de la compra",()=>{
+        const mockId = "order123";
 
+        cy.intercept("GET", `http://localhost:5000/api/orders/${mockId}`, {
+            statusCode: 200,
+            body: {
+                _id: "order123",
+                user: {
+                    _id: "user999",
+                    name: "Usuario Prueba",
+                    email: "admin@test.com"
+                },
+                items: [
+                    { productId: "prodA1", name: "Producto Demo A", quantity: 2, price: 2500 },
+                    { productId: "prodB2", name: "Producto Demo B", quantity: 1, price: 10000 }
+                ],
+                total: 15000,
+                status: "Pendiente",
+                createdAt: "2025-10-28T12:00:00.000Z",
+                updatedAt: "2025-10-28T12:00:00.000Z"
+            }
+        }).as("mockOrderDetail");
+
+
+        cy.wait("@mockOrders")
+
+        cy.get('[data-test="tabla-orders"]').should("be.visible")
+        
+        cy.get('[data-test="tabla-orders"] tr').eq(0).within(() =>{
+            cy.get('[data-test="cy-order-goto"]').click()
+        })
+
+        cy.wait("@mockOrderDetail");
+
+        // TITULO
+        cy.contains("Detalle de Orden").should("exist");
+
+        // INFO GENERAL
+        cy.contains("Orden#DER123")
+        cy.contains("Pendiente").should("exist");
+        cy.contains("$15.000,00").should("exist");
+
+        // Verifica que los productos se listan
+        cy.contains("Producto Demo A").should("exist");
+        cy.contains("Producto Demo B").should("exist");
+
+        // Verifica que hay 2 items en total
+        cy.get("ul li").should("have.length", 2);
+
+        cy.contains("Volver a mis compras").click();
+        cy.url().should("include", "/myorders");
     })
 
 

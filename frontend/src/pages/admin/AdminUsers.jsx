@@ -2,31 +2,29 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
+import axios from "axios";
 
 export default function AdminUsers() {
   const { token, user } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
- useEffect(() => {
-  const fetchUsers = async () => {
-    try {
-      const res = await fetch("http://localhost:5000/api/users", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error("Error al cargar usuarios");
-      const data = await res.json();
-      setUsers(data);
-    } catch (err) {
-      console.error(err);
-      toast.error("No se pudieron cargar los usuarios");
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/users");
+        setUsers(res.data);
+      } catch (err) {
+        console.error(err);
+        toast.error("No se pudieron cargar los usuarios");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  fetchUsers();
-}, [token]); // depende solo del token
+    fetchUsers();
+  }, []);
+
 
 
 

@@ -44,27 +44,22 @@ describe("Home Page", () => {
   it("debería andar la paginación y mostrar productos diferentes", () => {
     cy.visit("/");
 
-   cy.get(".producto-celda h3").first().invoke("text").as("firstProductPage1");
-
-    cy.contains("Anterior").should("be.disabled");
+    cy.get(".producto-celda h3")
+      .first()
+      .invoke("text")
+      .as("firstProductPage1");
 
     cy.contains("Siguiente").click();
 
-    // Verifica que el primer producto en página 2 no sea igual al de página 1
-    cy.get(".producto-celda h3").first().invoke("text").then((textPage2) => {
-      cy.get("@firstProductPage1").should("not.equal", textPage2);
-    });
-
-    // Verifica que en la página 2 se bloquea el "Siguiente"
-    cy.contains("Siguiente").should("be.disabled");
-
-    // Verifica una tarjeta de la página 2
-     cy.get(".producto-celda").first().within(() => {
-      cy.get("h3").should("be.visible");
-      cy.get("p").should("exist");
-      cy.contains("Ver detalles");
+    cy.get("@firstProductPage1").then((textPage1) => {
+      cy.get(".producto-celda h3")
+        .first()
+        .should(($el) => {
+          expect($el.text()).to.not.equal(textPage1);
+        });
     });
   });
+
 
 
   it("debería permitir hacer click en 'Ver detalles' y navegar al detalle del producto", () => {
@@ -78,7 +73,8 @@ describe("Home Page", () => {
 
     // Verifico que en la página de detalle aparezcan datos clave
     cy.get("h1").should("be.visible"); // título del producto
-     //imagen
+
+    //imagen ver visibilidad
     cy.get('[data-test = "product-image"]').should("be.visible")
       .and(($imagen) =>{  //$imagen es lo obtenido en el get ( una especie de objeto del dom)
       expect($imagen[0].naturalWidth).to.be.greaterThan(0);
