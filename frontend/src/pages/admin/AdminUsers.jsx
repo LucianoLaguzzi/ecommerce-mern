@@ -3,6 +3,8 @@ import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 import axios from "axios";
+import { API_BASE_URL } from "../../config/api";
+
 
 export default function AdminUsers() {
   const { token, user } = useAuth();
@@ -12,7 +14,7 @@ export default function AdminUsers() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/users");
+        const res = await axios.get(`${API_BASE_URL}/api/users`);
         setUsers(res.data);
       } catch (err) {
         console.error(err);
@@ -51,7 +53,7 @@ export default function AdminUsers() {
 
     if (result.isConfirmed) {
       try {
-        const res = await fetch(`http://localhost:5000/api/users/${id}`, {
+        const res = await fetch(`${API_BASE_URL}/api/users/${id}`, {
           method: "DELETE",
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -79,7 +81,7 @@ export default function AdminUsers() {
     if (!result.isConfirmed) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/users/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/users/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

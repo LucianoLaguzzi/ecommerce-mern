@@ -3,6 +3,7 @@ import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { Link } from "react-router-dom";
 import { formatPrice } from "../utils/formatPrice"
+import { API_BASE_URL } from "../config/api";
 
 export default function MyOrders() {
   const [orders, setOrders] = useState([]);
@@ -13,7 +14,7 @@ export default function MyOrders() {
   useEffect(() => {
     const listOrders = async () => {
       try {
-        const { data } = await axios.get("http://localhost:5000/api/orders/myorders", {
+        const { data } = await axios.get(`${API_BASE_URL}/api/orders/myorders`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setOrders(data);

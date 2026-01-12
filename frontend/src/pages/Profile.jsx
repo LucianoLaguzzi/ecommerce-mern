@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { API_BASE_URL } from "../config/api";
 
 export default function Profile() {
   const { user, token, setUser } = useAuth();
@@ -24,7 +25,7 @@ export default function Profile() {
     e.preventDefault();
     try {
       const { data } = await axios.put(
-        "http://localhost:5000/api/users/profile",
+        `${API_BASE_URL}/api/users/profile`,
         formData,
         { headers: { Authorization: `Bearer ${token}` } }
       );

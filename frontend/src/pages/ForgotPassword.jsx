@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import { API_BASE_URL } from "../config/api";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -8,6 +9,7 @@ export default function ForgotPassword() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  
 
   const navigate = useNavigate();
 
@@ -22,7 +24,7 @@ export default function ForgotPassword() {
     }
 
     try {
-      await axios.put("http://localhost:5000/api/auth/forgot-password", {
+      await axios.put(`${API_BASE_URL}/api/auth/forgot-password`, {
         email,
         password,
       });

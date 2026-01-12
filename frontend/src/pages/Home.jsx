@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { formatPrice } from "../utils/formatPrice";
+import { API_BASE_URL } from "../config/api";
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -11,7 +12,7 @@ export default function Home() {
   const fetchProducts = async (page = 1) => {
     try {
       const { data } = await axios.get(
-        `http://localhost:5000/api/products?page=${page}&limit=6`
+        `${API_BASE_URL}/api/products?page=${page}&limit=6`
       );
       setProducts(data.products);
       setPage(data.page);

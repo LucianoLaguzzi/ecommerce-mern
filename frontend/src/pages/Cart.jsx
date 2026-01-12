@@ -5,6 +5,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { useAuth } from "../context/AuthContext";
 import { formatPrice } from "../utils/formatPrice";
+import { API_BASE_URL } from "../config/api";
 
 function Cart() {
   const {
@@ -83,7 +84,7 @@ function Cart() {
 
     try {
       await axios.post(
-        "http://localhost:5000/api/orders",
+        `${API_BASE_URL}/api/orders`,
         { items: cartItems, total },
         { headers: { Authorization: `Bearer ${token}` } }
       );

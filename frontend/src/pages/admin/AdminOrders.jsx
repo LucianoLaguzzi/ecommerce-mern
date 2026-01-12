@@ -4,6 +4,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { formatPrice } from "../../utils/formatPrice";
+import { API_BASE_URL } from "../../config/api";
 
 export default function AdminOrders() {
   const { token } = useAuth();
@@ -18,7 +19,7 @@ export default function AdminOrders() {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get("http://localhost:5000/api/orders", {
+      const { data } = await axios.get(`${API_BASE_URL}/api/orders`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setOrders(data);
@@ -131,7 +132,7 @@ export default function AdminOrders() {
                       const newStatus = e.target.value;
                       try {
                         await axios.patch(
-                          `http://localhost:5000/api/orders/${order._id}`,
+                          `${API_BASE_URL}/api/orders/${order._id}`,
                           { status: newStatus },
                           { headers: { Authorization: `Bearer ${token}` } }
                         );

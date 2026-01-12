@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 import { formatPrice } from "../../utils/formatPrice";
 import axios from "axios";
+import { API_BASE_URL } from "../../config/api";
 
 export default function AdminProducts() {
   const { token } = useAuth();
@@ -33,7 +34,7 @@ export default function AdminProducts() {
     setLoading(true);
 
     const { data } = await axios.get(
-      `http://localhost:5000/api/products?page=${pageNumber}&limit=6`
+      `${API_BASE_URL}/api/products?page=${pageNumber}&limit=6`
     );
 
     setProducts(data.products);
@@ -105,7 +106,7 @@ export default function AdminProducts() {
 
     if (editingProduct) {
       res = await axios.put(
-        `http://localhost:5000/api/products/${editingProduct._id}`,
+        `${API_BASE_URL}/api/products/${editingProduct._id}`,
         formData,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -113,7 +114,7 @@ export default function AdminProducts() {
       );
     } else {
       res = await axios.post(
-        "http://localhost:5000/api/products",
+        `${API_BASE_URL}/api/products`,
         formData,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -173,7 +174,7 @@ export default function AdminProducts() {
 
   try {
     await axios.delete(
-      `http://localhost:5000/api/products/${id}`,
+      `${API_BASE_URL}/api/products/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       }

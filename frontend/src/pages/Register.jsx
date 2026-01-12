@@ -3,6 +3,7 @@ import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import Swal from "sweetalert2";
+import { API_BASE_URL } from "../config/api";
 
 export default function Register() {
   const { login } = useAuth();
@@ -18,7 +19,7 @@ export default function Register() {
   e.preventDefault();
   setError("");
   try {
-    const { data } = await axios.post("http://localhost:5000/api/auth/register", {
+    const { data } = await axios.post(`${API_BASE_URL}/api/auth/register`, {
       name, email, password, phone, address
     });
 

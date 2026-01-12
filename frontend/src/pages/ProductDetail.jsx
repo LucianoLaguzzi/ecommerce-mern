@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import useCart from "../context/useCart";
 import { formatPrice } from "../utils/formatPrice";
+import { API_BASE_URL } from "../config/api";
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -10,6 +11,7 @@ export default function ProductDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [localError, setLocalError] = useState(null);
+  
 
   const [zoomStyle, setZoomStyle] = useState({ display: "none" });
   const [zoomActive, setZoomActive] = useState(false);
@@ -20,7 +22,7 @@ export default function ProductDetail() {
     const mostrarProducto = async () => {
       try {
         setLoading(true);
-        const { data } = await axios.get(`http://localhost:5000/api/products/${id}`);
+        const { data } = await axios.get(`${API_BASE_URL}/api/products/${id}`);
         setProduct(data);
         setError(null); // limpia error por si cargó bien
       } catch (err) {
