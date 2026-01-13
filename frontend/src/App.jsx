@@ -9,7 +9,7 @@ import Profile from "./pages/Profile";
 import PrivateRoute from "./components/PrivateRoute";
 import MyOrders from "./pages/MyOrders";
 import OrderDetail from "./pages/OrderDetail";
-import AdminLayout from "./pages/Admin/AdminLayout";
+import AdminLayout from "./pages/admin/AdminLayout";
 import AdminRoute from "./components/AdminRoute";
 import AccessDenied from "./pages/AccessDenied";
 import NotFound from "./pages/NotFound";
