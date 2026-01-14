@@ -25,11 +25,21 @@ jobs:
       - name: Run Cypress tests and generate report
         run: npm run report
 
+
+
+       # 🔹 RENOMBRAR EL HTML CON FECHA
+      - name: Rename Cypress HTML report with date
+        run: |
+          REPORT_DATE=$(date +"%Y-%m-%d_%H-%M")
+          mv cypress/reports/html/report.html cypress/reports/html/report-$REPORT_DATE.html
+
+
+
       - name: Upload Cypress HTML report
         uses: actions/upload-artifact@v4
         with:
           name: cypress-report
-          path: cypress/reports/html
+          path: cypress/reports/html/*.html
 
       - name: Upload Cypress screenshots
         uses: actions/upload-artifact@v4
