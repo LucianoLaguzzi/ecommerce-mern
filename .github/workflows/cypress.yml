@@ -27,11 +27,25 @@ jobs:
 
 
 
-       # 🔹 RENOMBRAR EL HTML CON FECHA
+       # RENOMBRAR EL HTML CON FECHA
       - name: Rename Cypress HTML report with date
         run: |
           REPORT_DATE=$(date +"%Y-%m-%d_%H-%M")
           mv cypress/reports/html/report.html cypress/reports/html/report-$REPORT_DATE.html
+
+
+
+
+        # RENOMBRAR SOLO LAS CARPETAS DE SCREENSHOTS
+      - name: Rename Cypress screenshot folders with date
+        if: always()
+        run: |
+          DATE=$(date +"%Y-%m-%d_%H-%M")
+          for dir in cypress/screenshots/*; do
+            if [ -d "$dir" ]; then
+              mv "$dir" "${dir%.cy.js}-$DATE.cy.js"
+            fi
+          done
 
 
 
